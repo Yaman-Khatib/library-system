@@ -1,0 +1,6 @@
+C:\learning_coding\The Story Corner Project\Library_DataAccess\bin\Release\Library_DataAccess.dll
+C:\learning_coding\The Story Corner Project\Library_DataAccess\bin\Release\Library_DataAccess.pdb
+C:\learning_coding\The Story Corner Project\Library_DataAccess\obj\Release\Library_DataAccess.csproj.AssemblyReference.cache
+C:\learning_coding\The Story Corner Project\Library_DataAccess\obj\Release\Library_DataAccess.csproj.CoreCompileInputs.cache
+C:\learning_coding\The Story Corner Project\Library_DataAccess\obj\Release\Library_DataAccess.dll
+C:\learning_coding\The Story Corner Project\Library_DataAccess\obj\Release\Library_DataAccess.pdb

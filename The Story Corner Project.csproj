@@ -1,0 +1,788 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3D676231-BE84-4EC2-B195-FC22366FA34E}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>The_Story_Corner_Project</RootNamespace>
+    <AssemblyName>The Story Corner Project</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ComponentFactory.Krypton.Docking">
+      <HintPath>..\..\Users\yaman\Downloads\Krypton-master\Krypton-master\Bin\ComponentFactory.Krypton.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Navigator">
+      <HintPath>..\..\Users\yaman\Downloads\Krypton-master\Krypton-master\Bin\ComponentFactory.Krypton.Navigator.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Ribbon">
+      <HintPath>..\..\Users\yaman\Downloads\Krypton-master\Krypton-master\Bin\ComponentFactory.Krypton.Ribbon.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Toolkit, Version=4.6.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Users\yaman\Downloads\Krypton-master\Krypton-master\Bin\ComponentFactory.Krypton.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Workspace">
+      <HintPath>..\..\Users\yaman\Downloads\Krypton-master\Krypton-master\Bin\ComponentFactory.Krypton.Workspace.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Books\frmBackUpData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmBackUpData.Designer.cs">
+      <DependentUpon>frmBackUpData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\Controls\ctrlBookInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Books\Controls\ctrlBookInfo.Designer.cs">
+      <DependentUpon>ctrlBookInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\Controls\ctrlBookInfoWithFilter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Books\Controls\ctrlBookInfoWithFilter.Designer.cs">
+      <DependentUpon>ctrlBookInfoWithFilter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmAddUpdateBook.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmAddUpdateBook.Designer.cs">
+      <DependentUpon>frmAddUpdateBook.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmBookSales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmBookSales.Designer.cs">
+      <DependentUpon>frmBookSales.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmMiniAddNewLanguage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmMiniAddNewLanguage.Designer.cs">
+      <DependentUpon>frmMiniAddNewLanguage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmMiniAddNewBookGenre.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmMiniAddNewBookGenre.Designer.cs">
+      <DependentUpon>frmMiniAddNewBookGenre.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmSellBook.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmSellBook.Designer.cs">
+      <DependentUpon>frmSellBook.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmShowBookInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmShowBookInfo.Designer.cs">
+      <DependentUpon>frmShowBookInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Borrows\ctrlBorrowInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Borrows\ctrlBorrowInfo.Designer.cs">
+      <DependentUpon>ctrlBorrowInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Borrows\frmAddUpdateBorrow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Borrows\frmAddUpdateBorrow.Designer.cs">
+      <DependentUpon>frmAddUpdateBorrow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Borrows\frmManageBorrows.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Borrows\frmManageBorrows.Designer.cs">
+      <DependentUpon>frmManageBorrows.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Borrows\frmShowBorrowInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Borrows\frmShowBorrowInfo.Designer.cs">
+      <DependentUpon>frmShowBorrowInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\Controls\ctrlCourseInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Courses\Controls\ctrlCourseInfo.Designer.cs">
+      <DependentUpon>ctrlCourseInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\frmAddNewCourseType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Courses\frmAddNewCourseType.Designer.cs">
+      <DependentUpon>frmAddNewCourseType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\frmAddUpdateCourse.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Courses\frmAddUpdateCourse.Designer.cs">
+      <DependentUpon>frmAddUpdateCourse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\frmCourseDetatils.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Courses\frmCourseDetatils.Designer.cs">
+      <DependentUpon>frmCourseDetatils.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\frmEnrolleReaderInCourse.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Courses\frmEnrolleReaderInCourse.Designer.cs">
+      <DependentUpon>frmEnrolleReaderInCourse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\frmListEnrolledReadersInACourse.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Courses\frmListEnrolledReadersInACourse.Designer.cs">
+      <DependentUpon>frmListEnrolledReadersInACourse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Courses\frmManageCourses.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Courses\frmManageCourses.Designer.cs">
+      <DependentUpon>frmManageCourses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmMainMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMainMenu.Designer.cs">
+      <DependentUpon>frmMainMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Books\frmManageBooks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Books\frmManageBooks.Designer.cs">
+      <DependentUpon>frmManageBooks.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Global Classes\clsGlobal.cs" />
+    <Compile Include="Global Classes\clsLogging.cs" />
+    <Compile Include="Global Classes\clsUtil.cs" />
+    <Compile Include="Global Classes\clsValidating.cs" />
+    <Compile Include="Library settings\frmManageLibrarySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Library settings\frmManageLibrarySettings.Designer.cs">
+      <DependentUpon>frmManageLibrarySettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login\frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Payments\frmManagePayments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Payments\frmManagePayments.Designer.cs">
+      <DependentUpon>frmManagePayments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Payments\frmReaderPayments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Payments\frmReaderPayments.Designer.cs">
+      <DependentUpon>frmReaderPayments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Readers\Controls\ctrlReaderInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Readers\Controls\ctrlReaderInfo.Designer.cs">
+      <DependentUpon>ctrlReaderInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\Controls\ctrlReaderInfoWithFilter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Readers\Controls\ctrlReaderInfoWithFilter.Designer.cs">
+      <DependentUpon>ctrlReaderInfoWithFilter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\Controls\ctrReaderBasicInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Readers\Controls\ctrReaderBasicInfo.Designer.cs">
+      <DependentUpon>ctrReaderBasicInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\frmRenewSubscription.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Readers\frmRenewSubscription.Designer.cs">
+      <DependentUpon>frmRenewSubscription.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\frmAddUpdateReader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Readers\frmAddUpdateReader.Designer.cs">
+      <DependentUpon>frmAddUpdateReader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\frmManageReaders.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Readers\frmManageReaders.Designer.cs">
+      <DependentUpon>frmManageReaders.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\frmManageReaderSubscriptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Readers\frmManageReaderSubscriptions.Designer.cs">
+      <DependentUpon>frmManageReaderSubscriptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Readers\frmShowReaderInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Readers\frmShowReaderInfo.Designer.cs">
+      <DependentUpon>frmShowReaderInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tutors\frmAddUpdateTutors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tutors\frmAddUpdateTutors.Designer.cs">
+      <DependentUpon>frmAddUpdateTutors.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Controls\ctrUserInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Users\Controls\ctrUserInfo.Designer.cs">
+      <DependentUpon>ctrUserInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Users\frmAddUpdateUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Users\frmAddUpdateUser.Designer.cs">
+      <DependentUpon>frmAddUpdateUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Users\frmManageUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Users\frmManageUsers.Designer.cs">
+      <DependentUpon>frmManageUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Users\ShowUserInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Users\ShowUserInfo.Designer.cs">
+      <DependentUpon>ShowUserInfo.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Books\Controls\ctrlBookInfo.resx">
+      <DependentUpon>ctrlBookInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\Controls\ctrlBookInfoWithFilter.resx">
+      <DependentUpon>ctrlBookInfoWithFilter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmAddUpdateBook.resx">
+      <DependentUpon>frmAddUpdateBook.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmBookSales.resx">
+      <DependentUpon>frmBookSales.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmMiniAddNewLanguage.resx">
+      <DependentUpon>frmMiniAddNewLanguage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmMiniAddNewBookGenre.resx">
+      <DependentUpon>frmMiniAddNewBookGenre.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmSellBook.resx">
+      <DependentUpon>frmSellBook.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmShowBookInfo.resx">
+      <DependentUpon>frmShowBookInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Borrows\ctrlBorrowInfo.resx">
+      <DependentUpon>ctrlBorrowInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Borrows\frmAddUpdateBorrow.resx">
+      <DependentUpon>frmAddUpdateBorrow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Borrows\frmManageBorrows.resx">
+      <DependentUpon>frmManageBorrows.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Borrows\frmShowBorrowInfo.resx">
+      <DependentUpon>frmShowBorrowInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\Controls\ctrlCourseInfo.resx">
+      <DependentUpon>ctrlCourseInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\frmAddNewCourseType.resx">
+      <DependentUpon>frmAddNewCourseType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\frmAddUpdateCourse.resx">
+      <DependentUpon>frmAddUpdateCourse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\frmCourseDetatils.resx">
+      <DependentUpon>frmCourseDetatils.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\frmEnrolleReaderInCourse.resx">
+      <DependentUpon>frmEnrolleReaderInCourse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\frmListEnrolledReadersInACourse.resx">
+      <DependentUpon>frmListEnrolledReadersInACourse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Courses\frmManageCourses.resx">
+      <DependentUpon>frmManageCourses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMainMenu.resx">
+      <DependentUpon>frmMainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Books\frmManageBooks.resx">
+      <DependentUpon>frmManageBooks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Library settings\frmManageLibrarySettings.resx">
+      <DependentUpon>frmManageLibrarySettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Payments\frmManagePayments.resx">
+      <DependentUpon>frmManagePayments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Payments\frmReaderPayments.resx">
+      <DependentUpon>frmReaderPayments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Readers\Controls\ctrlReaderInfo.resx">
+      <DependentUpon>ctrlReaderInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\Controls\ctrlReaderInfoWithFilter.resx">
+      <DependentUpon>ctrlReaderInfoWithFilter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\Controls\ctrReaderBasicInfo.resx">
+      <DependentUpon>ctrReaderBasicInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\frmRenewSubscription.resx">
+      <DependentUpon>frmRenewSubscription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\frmAddUpdateReader.resx">
+      <DependentUpon>frmAddUpdateReader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\frmManageReaders.resx">
+      <DependentUpon>frmManageReaders.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\frmManageReaderSubscriptions.resx">
+      <DependentUpon>frmManageReaderSubscriptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\frmShowReaderInfo.resx">
+      <DependentUpon>frmShowReaderInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tutors\frmAddUpdateTutors.resx">
+      <DependentUpon>frmAddUpdateTutors.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Users\Controls\ctrUserInfo.resx">
+      <DependentUpon>ctrUserInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Users\frmAddUpdateUser.resx">
+      <DependentUpon>frmAddUpdateUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Users\frmManageUsers.resx">
+      <DependentUpon>frmManageUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Users\ShowUserInfo.resx">
+      <DependentUpon>ShowUserInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PersonDetails 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\User 32 -2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sign_out 32 -2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\read.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Library_Business\Library_Business.csproj">
+      <Project>{4cc24171-9011-48b0-b422-df812c41cbb6}</Project>
+      <Name>Library_Business</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Add Person 40.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\185038_home_house_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undraw_Reading_book_re_kqpk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Applications.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Manage Applications 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Backup\" />
+    <Folder Include="People\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Number 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Person 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Male 512.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Man 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Woman 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9226331_bag_bagpack_school_kids_luggage_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\6771584_black board_education_learning_nuclear_school_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ApplicationTitle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Manage Applications 321.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Calendar 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Phone 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Email 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Number 321.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2959749_facebook_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2959748_instagram_photo_share_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Address 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Female 512.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\send email 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\897243_book_read_reading_study_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undraw_Reading_time_re_phf7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undraw_Reading_time_re_phf7 %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undraw_Loading_re_5axr.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\403020_avatar_male_support_user_headset_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\628291_avatar_headset_male_man_person_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\profile_3135715 %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Users 256.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Read 48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Next 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CloseBlack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Close 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3069185_book_education_learn_school_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\8674346_ic_fluent_book_add_regular_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\6771602_book shelf_books_education_learning_school_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\211732_copy_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Title 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Person black 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Barcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Number black.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9042901_qr_code_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Language 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\book black 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1303892_add_circle_create_new_plus_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Close 321.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\add book 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit page 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete black 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\copies 32 black.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Add 32 blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\light blue add 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1291735_book_education_homework_school_school book_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2250033_cash_fees_money_purse_shop_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shopping cart 32 blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undraw_road_to_knowledge_m8s0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Question 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2124277_add_essential_app_document_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4168571_renew_refresh_reload_repeat_sync_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1889199_coins_hand_loan_loan money_money_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1904675_configuration_edit_gear_options_preferences_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9215076_document_office_file_folder_data_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9035610_person_add_outline_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3844472_hamburger_list_menu_more_navigation_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4308184_client_costs_employee_finance_money_icon %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\7693979_pencil_edit_change_write_icon %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\172480_home_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3643769_building_home_house_main_menu_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\185096_settings_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3586362_checklist_document_list_paper_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4308184_client_costs_employee_finance_money_icon %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9110887_pencil_edit_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1291735_book_education_homework_school_school book_icon %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9026048_shopping_cart_simple_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3643769_building_home_house_main_menu_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undraw_Preferences_re_49in.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\299086_info_sign_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9004777_house_home_building_property_icon %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3592841_cog_gear_general_machine_office_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\facebook 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Instagram 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4552607_facebook_logo_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Instagram light 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\money 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2093659_update_arrow_refresh_renew_synchronize_icon %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\6586117_add_create_new_plus_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\10750643_subscription_subscribe_email_business_follow_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\10750643_subscription_subscribe_email_business_follow_icon %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\10750643_subscription_subscribe_email_business_follow_icon %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\10750643_subscription_subscribe_email_business_follow_icon %284%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\6771586_book_courses_education_learning_school_icon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AddPerson 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\book.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\money 32 - 2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\473633_backup_data_disk_diskette_floppy_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\473633_backup_data_disk_diskette_floppy_icon1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\285645_user_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3209375_backup_cloud_data_storage_upload_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3209276_backup_cloud_data_download_storage_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\read1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\read %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\read %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\read %283%29.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

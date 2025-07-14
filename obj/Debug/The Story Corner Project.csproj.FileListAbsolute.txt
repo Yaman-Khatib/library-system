@@ -1,0 +1,71 @@
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\bin\Debug\The Story Corner Project.exe.config
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\bin\Debug\The Story Corner Project.exe
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\bin\Debug\The Story Corner Project.pdb
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.AssemblyReference.cache
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Properties.Resources.resources
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.GenerateResource.cache
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.CoreCompileInputs.cache
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\obj\Debug\The Story Corner Project.exe
+C:\Users\yaman\OneDrive\Desktop\The Story Corner Project\obj\Debug\The Story Corner Project.pdb
+C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.AssemblyReference.cache
+C:\learning_coding\The Story Corner Project\bin\Debug\The Story Corner Project.exe
+C:\learning_coding\The Story Corner Project\bin\Debug\The Story Corner Project.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Docking.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Navigator.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Ribbon.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Toolkit.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Workspace.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\Library_Business.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\Library_DataAccess.dll
+C:\learning_coding\The Story Corner Project\bin\Debug\Library_Business.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Docking.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Navigator.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Ribbon.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Toolkit.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\ComponentFactory.Krypton.Workspace.pdb
+C:\learning_coding\The Story Corner Project\bin\Debug\Library_DataAccess.pdb
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmAddUpdateBook.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.frmMainMenu.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.frmManageBooks.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Login.frmLogin.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Properties.Resources.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.Controls.ctrlReaderInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.frmAddUpdateReader.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.frmManageReaders.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.frmShowReaderInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Users.Controls.ctrUserInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Users.frmAddUpdateUser.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Users.frmManageUsers.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Users.frmShowUserInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.GenerateResource.cache
+C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.CoreCompileInputs.cache
+C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.CopyComplete
+C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.exe
+C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.pdb
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmMiniAddNewLanguage.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmMiniAddNewBookGenre.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.Controls.ctrlBookInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmShowBookInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Borrows.frmManageBorrows.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Borrows.frmAddUpdateBorrow.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.Controls.ctrlReaderInfoWithFilter.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.Controls.ctrlBookInfoWithFilter.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.Controls.ctrlReaderBasicInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Borrows.frmShowBorrowInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Borrows.ctrlBorrowInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Payments.frmManagePayments.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Library_settings.frmManageLibrarySettings.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Payments.frmReaderPayments.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.frmManageReaderSubscriptions.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.frmRenewSubscription.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmManageCourses.resources
+C:\learning_coding\The Story Corner Project\bin\Debug\The Story Corner Project.exe.config
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmAddUpdateCourse.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Tutors.frmAddUpdateTutors.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmAddUpdateCourseType.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.Controls.ctrlCourseInfo.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmListEnrolledReadersInACourse.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmEnrolleReaderInCourse.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmCourseDetatils.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmBookSales.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmSaleBook.resources

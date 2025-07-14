@@ -1,0 +1,7 @@
+Forms with PictureBoxes using local resources:
+-------------------------------------------------
+Error processing form frmShowUserInfo: No parameterless constructor defined for this object.
+Error processing form frmShowReaderInfo: No parameterless constructor defined for this object.
+Error processing form frmReaderPayments: No parameterless constructor defined for this object.
+Error processing form frmShowBorrowInfo: No parameterless constructor defined for this object.
+Error processing form frmShowBookInfo: No parameterless constructor defined for this object.
