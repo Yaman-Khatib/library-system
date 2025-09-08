@@ -553,6 +553,86 @@ namespace Library_DataAccess
             return dataTable;
         }
 
+        public static DataTable GetAllReadersPaged(string filterColumn, string filterValue, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DataTable dataTable = new DataTable();
+            totalRecords = 0;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+
+                    // Build the WHERE clause based on filter
+                    //string whereClause = "WHERE (IsDeleted IS NULL OR IsDeleted = 0)";
+                    string whereClause = "";
+                    if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                    {
+                        if (filterColumn == "ReaderID")
+                        {
+                            //whereClause += $" AND {filterColumn} = @FilterValue";
+                            whereClause += $" Where {filterColumn} = @FilterValue";
+                        }
+                        else
+                        {
+                            //whereClause += $" AND {filterColumn} LIKE @FilterValue";
+                            whereClause += $" Where {filterColumn} Like @FilterValue";
+                        }
+                    }
+
+                    // Get total count
+                    string countQuery = $"SELECT COUNT(*) FROM vReadersDetails {whereClause}";
+                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    {
+                        if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                        {
+                            if (filterColumn == "ReaderID")
+                            {
+                                countCommand.Parameters.AddWithValue("@FilterValue", filterValue);
+                            }
+                            else
+                            {
+                                countCommand.Parameters.AddWithValue("@FilterValue", filterValue + "%");
+                            }
+                        }
+                        totalRecords = (int)countCommand.ExecuteScalar();
+                    }
+
+                    // Get paged data
+                    int offset = (pageNumber - 1) * pageSize;
+                    string dataQuery = $"SELECT * FROM vReadersDetails {whereClause} ORDER BY ReaderID OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                    
+                    using (SqlCommand dataCommand = new SqlCommand(dataQuery, connection))
+                    {
+                        dataCommand.Parameters.AddWithValue("@Offset", offset);
+                        dataCommand.Parameters.AddWithValue("@PageSize", pageSize);
+                        
+                        if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                        {
+                            if (filterColumn == "ReaderID")
+                            {
+                                dataCommand.Parameters.AddWithValue("@FilterValue", filterValue);
+                            }
+                            else
+                            {
+                                dataCommand.Parameters.AddWithValue("@FilterValue", filterValue + "%");
+                            }
+                        }
+
+                        using (SqlDataReader reader = dataCommand.ExecuteReader())
+                        {
+                            dataTable.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex) { }
+            catch (Exception ex) { }
+            
+            return dataTable;
+        }
+
 
     }
 }

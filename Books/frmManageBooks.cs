@@ -16,6 +16,11 @@ namespace The_Story_Corner_Project
     public partial class frmManageBooks : KryptonForm
     {
         DataTable _dtBooks;
+        private int _currentPage = 1;
+        private int _pageSize = 100;
+        private int _totalPages = 0;
+        private int _totalRecords = 0;
+        private string _currentLanguage = "";
 
         public frmManageBooks()
         {
@@ -42,17 +47,24 @@ namespace The_Story_Corner_Project
             LoadDataGridViewAsync();
         }
 
-        private async Task<DataTable> GetDataFromDatabaseAsync(string Language)
+        private async Task<DataTable> GetDataFromDatabaseAsync(string Language, int pageNumber, int pageSize)
         {
-
             // Simulate a delay to mimic a database call
             await Task.Delay(2);
-            return clsBook.GetAllBooks(Language);
+            return clsBook.GetAllBooksPaged(Language, pageNumber, pageSize, out _totalRecords);
         }
 
         private async void LoadDataGridViewAsync()
         {
             cbFilterBy.SelectedIndex = 0;
+            _currentLanguage = cbLanguages.Text;
+            _currentPage = 1; // Reset to first page
+            
+            await LoadCurrentPageAsync();
+        }
+
+        private async Task LoadCurrentPageAsync()
+        {
             try
             {
                 // Disable the DataGridView while loading data
@@ -61,17 +73,23 @@ namespace The_Story_Corner_Project
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
 
-                // Get the data from the database asynchronously
-                _dtBooks = await GetDataFromDatabaseAsync(cbLanguages.Text);
+                // Get paged data from the database asynchronously
+                _dtBooks = await GetDataFromDatabaseAsync(_currentLanguage, _currentPage, _pageSize);
+                
+                // Calculate total pages
+                _totalPages = (int)Math.Ceiling((double)_totalRecords / _pageSize);
 
                 // Bind the data to the DataGridView
                 dgvBooks.DataSource = _dtBooks;
+
                 if (dgvBooks.RowCount > 0)
                 {
                     pctrLoading.Visible = false;
                 }
                 else
-                { pctrLoading.Visible = true; }
+                { 
+                    pctrLoading.Visible = true; 
+                }
             }
             catch (Exception ex)
             {
@@ -83,9 +101,39 @@ namespace The_Story_Corner_Project
                 // Re-enable the DataGridView
                 dgvBooks.Enabled = true;
             }
-            lblRecordsCount.Text = dgvBooks.RowCount.ToString();
+            
+            UpdatePaginationInfo();
             StyleColumns();
         }
+
+
+        private void UpdatePaginationInfo()
+        {
+            lblRecordsCount.Text = $"Page {_currentPage} of {_totalPages} ({_totalRecords} total records)";
+            
+            // Enable/disable navigation buttons (if they exist)
+            // Note: Pagination buttons need to be added to the form designer
+            // For now, we'll just update the label with pagination info
+        }
+
+        private async void GoToNextPage()
+        {
+            if (_currentPage < _totalPages)
+            {
+                _currentPage++;
+                await LoadCurrentPageAsync();
+            }
+        }
+
+        private async void GoToPreviousPage()
+        {
+            if (_currentPage > 1)
+            {
+                _currentPage--;
+                await LoadCurrentPageAsync();
+            }
+        }
+
         private void StyleColumns()
         {
             if (dgvBooks.Rows.Count == 0)
@@ -101,7 +149,7 @@ namespace The_Story_Corner_Project
             dgvBooks.Columns["Language"].Width = 130;
             dgvBooks.Columns["Description"].Width = 160;
             dgvBooks.Columns["CopiesCount"].HeaderText = "Copies count";
-            dgvBooks.Columns["IsDeleted"].Visible = false;
+            //dgvBooks.Columns["IsDeleted"].Visible = false;
 
 
         }
@@ -127,32 +175,12 @@ namespace The_Story_Corner_Project
             }
         }
 
-        private void txtFilterValue_TextChanged(object sender, EventArgs e)
+        private async void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
-            string filterColumn = cbFilterBy.Text.Trim();
-            if (filterColumn == "Book Number")
-                filterColumn = "SerialNumber";
-            string filterValue = txtFilterValue.Text.Trim();
-
-            if(filterColumn == "None" || filterValue == "")
-            {
-                _dtBooks.DefaultView.RowFilter = "";
-                
-            }
-            if (filterValue != "")
-                _dtBooks.DefaultView.RowFilter = String.Format($" {filterColumn} like '{filterValue}%' ");
-
-
-            lblRecordsCount.Text = dgvBooks.Rows.Count.ToString();
-
-            if (dgvBooks.Rows.Count == 0) 
-            {
-                pctrLoading.Visible = true;
-            }
-            else
-            {
-                pctrLoading.Visible = false;
-            }
+            // For now, we'll implement a simple approach where filtering resets to page 1
+            // In a more advanced implementation, you could add filter parameters to the SQL query
+            _currentPage = 1;
+            await LoadCurrentPageAsync();
         }
 
         private void cbLanguages_SelectedIndexChanged(object sender, EventArgs e)
@@ -253,6 +281,30 @@ namespace The_Story_Corner_Project
             frmAddUpdateBook frm = new frmAddUpdateBook();
             frm.ShowDialog();            
             LoadDataGridViewAsync();
+        }
+
+        #region Pagination Event Handlers
+
+        private void btnPrevPage_Click(object sender, EventArgs e)
+        {
+            GoToPreviousPage();
+        }
+
+        private void btnNextPage_Click(object sender, EventArgs e)
+        {
+            GoToNextPage();
+        }
+
+        #endregion
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            GoToNextPage();
+        }
+
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            GoToPreviousPage();
         }
     }
 }

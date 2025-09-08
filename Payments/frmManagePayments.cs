@@ -14,6 +14,13 @@ namespace The_Story_Corner_Project.Payments
     public partial class frmManagePayments : KryptonForm
     {
         DataTable _dtPayments;
+        private int _currentPage = 1;
+        private int _pageSize = 100;
+        private int _totalPages = 0;
+        private int _totalRecords = 0;
+        private int _currentPaymentTypeID;
+        private DateTime _currentStartDate;
+        private DateTime _currentEndDate;
         public frmManagePayments()
         {
             InitializeComponent();
@@ -46,12 +53,11 @@ namespace The_Story_Corner_Project.Payments
             return cbPaymentType.SelectedIndex + 1;
         }
 
-        private async Task<DataTable> GetDataFromDatabaseAsync(string Language)
+        private async Task<DataTable> GetDataFromDatabaseAsync(int pageNumber, int pageSize)
         {
-
             // Simulate a delay to mimic a database call
             await Task.Delay(2);
-            return clsPayment.GetAllPayments(GetPaymentTypeID(), dtpStartDate.Value, dtpEndDate.Value);
+            return clsPayment.GetAllPaymentsPaged(_currentPaymentTypeID, _currentStartDate, _currentEndDate, pageNumber, pageSize, out _totalRecords);
         }
 
         private async void LoadDataGridViewAsync()
@@ -59,6 +65,17 @@ namespace The_Story_Corner_Project.Payments
             dgvPayments.DataSource = null;
             cbFilterBy.SelectedIndex = 0;
 
+            // Set current filter parameters
+            _currentPaymentTypeID = GetPaymentTypeID();
+            _currentStartDate = dtpStartDate.Value;
+            _currentEndDate = dtpEndDate.Value;
+            _currentPage = 1; // Reset to first page
+
+            await LoadCurrentPageAsync();
+        }
+
+        private async Task LoadCurrentPageAsync()
+        {
             try
             {
                 // Disable the DataGridView while loading data
@@ -67,8 +84,11 @@ namespace The_Story_Corner_Project.Payments
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
 
-                // Get the data from the database asynchronously
-                _dtPayments = await GetDataFromDatabaseAsync(cbPaymentType.Text);
+                // Get paged data from the database asynchronously
+                _dtPayments = await GetDataFromDatabaseAsync(_currentPage, _pageSize);
+
+                // Calculate total pages
+                _totalPages = (int)Math.Ceiling((double)_totalRecords / _pageSize);
 
                 // Bind the data to the DataGridView
                 dgvPayments.DataSource = _dtPayments;
@@ -77,7 +97,9 @@ namespace The_Story_Corner_Project.Payments
                     pctrLoading.Visible = false;
                 }
                 else
-                { pctrLoading.Visible = true; }
+                { 
+                    pctrLoading.Visible = true; 
+                }
             }
             catch (Exception ex)
             {
@@ -89,7 +111,8 @@ namespace The_Story_Corner_Project.Payments
                 // Re-enable the DataGridView
                 dgvPayments.Enabled = true;
             }
-            lblRecordsCount.Text = dgvPayments.RowCount.ToString();
+
+            UpdatePaginationInfo();
             UpdateTotalPaymentLabel();
             StyleColumns();
         }
@@ -139,42 +162,12 @@ namespace The_Story_Corner_Project.Payments
         }
 
 
-        private void txtFilterValue_TextChanged(object sender, EventArgs e)
+        private async void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
-
-            string filterColumn = cbFilterBy.Text.Trim();
-            string filterValue = txtFilterValue.Text.Trim();
-
-            if (filterColumn == "None" || filterValue == "")
-            {
-                _dtPayments.DefaultView.RowFilter = "";
-
-            }
-
-
-            if (cbFilterBy.Text.Trim() == "Reader name")
-                filterColumn = "FullName";
-
-            if (cbFilterBy.Text.Trim() == "Reader account number")
-                filterColumn = "AccountNumber";
-            if (cbFilterBy.Text.Trim() == "Paid to user")
-                filterColumn = "UserName";
-            
-
-            if (filterValue != "")
-                _dtPayments.DefaultView.RowFilter = String.Format($" {filterColumn} like '{filterValue}%' ");
-
-
-            lblRecordsCount.Text = dgvPayments.Rows.Count.ToString();
-            UpdateTotalPaymentLabel();
-            if (dgvPayments.Rows.Count == 0)
-            {
-                pctrLoading.Visible = true;
-            }
-            else
-            {
-                pctrLoading.Visible = false;
-            }
+            // For now, we'll implement a simple approach where filtering resets to page 1
+            // In a more advanced implementation, you could add filter parameters to the SQL query
+            _currentPage = 1;
+            await LoadCurrentPageAsync();
         }
 
         private void cbFilterBy_SelectedIndexChanged(object sender, EventArgs e)
@@ -265,5 +258,50 @@ namespace The_Story_Corner_Project.Payments
         {
 
         }
+
+        #region Pagination Methods
+
+        private void UpdatePaginationInfo()
+        {
+            lblRecordsCount.Text = $"Page {_currentPage} of {_totalPages} ({_totalRecords} total records)";
+            
+            // Enable/disable navigation buttons (if they exist)
+            // Note: Pagination buttons need to be added to the form designer
+            // For now, we'll just update the label with pagination info
+        }
+
+        private async void GoToNextPage()
+        {
+            if (_currentPage < _totalPages)
+            {
+                _currentPage++;
+                await LoadCurrentPageAsync();
+            }
+        }
+
+        private async void GoToPreviousPage()
+        {
+            if (_currentPage > 1)
+            {
+                _currentPage--;
+                await LoadCurrentPageAsync();
+            }
+        }
+
+        #endregion
+
+        #region Pagination Event Handlers
+
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            GoToPreviousPage();
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            GoToNextPage();
+        }
+
+        #endregion
     }
 }

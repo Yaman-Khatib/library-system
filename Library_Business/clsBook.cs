@@ -85,6 +85,13 @@ namespace Library_Business
             return clsBooksData.GetAllBooks(Language);
         }
 
+        // Method to get books with pagination
+        public static DataTable GetAllBooksPaged(string Language, int pageNumber, int pageSize, out int totalRecords)
+        {
+            // Get paged books using the data access layer
+            return clsBooksData.GetAllBooksPaged(Language, pageNumber, pageSize, out totalRecords);
+        }
+
         // Method to add a new book            
             private bool _AddNewBook()
             {

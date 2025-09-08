@@ -92,6 +92,12 @@ namespace Library_Business
             return clsPaymentsData.GetAllPayments(paymentTypeID, startDate, endDate);
         }
 
+        // Get payments with pagination for a specific period and type
+        public static DataTable GetAllPaymentsPaged(int paymentTypeID, DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
+        {
+            return clsPaymentsData.GetAllPaymentsPaged(paymentTypeID, startDate, endDate, pageNumber, pageSize, out totalRecords);
+        }
+
         // Update payment
         public static bool UpdatePayment(int paymentID, double paymentAmount, int readerID, int createdByUserID, DateTime paymentDate, int paymentTypeID)
         {

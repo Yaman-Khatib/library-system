@@ -274,6 +274,63 @@ namespace Library_DataAccess
             return borrowsTable;
         }
 
+        public static DataTable GetAllBorrowsPaged(int statusIndex, DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DataTable borrowsTable = new DataTable();
+            totalRecords = 0;
+            
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    
+                    // First, get the total count
+                    string countQuery = "SELECT COUNT(*) FROM vBorrows WHERE statusIndex = @statusIndex AND BorrowDate >= @startDate AND BorrowDate <= @endDate";
+                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    {
+                        countCommand.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        countCommand.Parameters.AddWithValue("@startDate", startDate);
+                        countCommand.Parameters.AddWithValue("@endDate", endDate);
+                        totalRecords = (int)countCommand.ExecuteScalar();
+                    }
+
+                    // Then get the paged data using OFFSET and FETCH
+                    int offset = (pageNumber - 1) * pageSize;
+                    string query = @"SELECT * FROM vBorrows 
+                                   WHERE statusIndex = @statusIndex AND BorrowDate >= @startDate AND BorrowDate <= @endDate
+                                   ORDER BY BorrowDate DESC 
+                                   OFFSET @Offset ROWS 
+                                   FETCH NEXT @PageSize ROWS ONLY";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        command.Parameters.AddWithValue("@startDate", startDate);
+                        command.Parameters.AddWithValue("@endDate", endDate);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
+                        
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            borrowsTable.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            return borrowsTable;
+        }
+
         public static int GetActiveBorrowsCopyCountForBook(int bookID)
         {
             using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))

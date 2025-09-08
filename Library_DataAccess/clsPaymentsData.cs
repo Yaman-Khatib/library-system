@@ -184,6 +184,64 @@ namespace Library_DataAccess
             return paymentsTable;
         }
 
+        // Get payments with pagination for a specific type and date range
+        public static DataTable GetAllPaymentsPaged(int paymentTypeID, DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DataTable paymentsTable = new DataTable();
+            totalRecords = 0;
+            
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    
+                    // First, get the total count
+                    string countQuery = @"
+                        SELECT COUNT(*)
+                        FROM vPayments
+                        WHERE PaymentDate >= @StartDate AND PaymentDate <= @EndDate AND PaymentTypeID = @PaymentTypeID";
+                    
+                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    {
+                        countCommand.Parameters.AddWithValue("@StartDate", startDate);
+                        countCommand.Parameters.AddWithValue("@EndDate", endDate);
+                        countCommand.Parameters.AddWithValue("@PaymentTypeID", paymentTypeID);
+                        totalRecords = (int)countCommand.ExecuteScalar();
+                    }
+
+                    // Then get the paged data using OFFSET and FETCH
+                    int offset = (pageNumber - 1) * pageSize;
+                    string query = @"
+                        SELECT *
+                        FROM vPayments
+                        WHERE PaymentDate >= @StartDate AND PaymentDate <= @EndDate AND PaymentTypeID = @PaymentTypeID
+                        ORDER BY PaymentDate DESC
+                        OFFSET @Offset ROWS
+                        FETCH NEXT @PageSize ROWS ONLY";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@StartDate", startDate);
+                        command.Parameters.AddWithValue("@EndDate", endDate);
+                        command.Parameters.AddWithValue("@PaymentTypeID", paymentTypeID);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            paymentsTable.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                clsLogEvent.Log(ex);
+            }
+            return paymentsTable;
+        }
+
         // Get payments for a specific reader
         public static DataTable GetPaymentsForReader(int readerID)
         {

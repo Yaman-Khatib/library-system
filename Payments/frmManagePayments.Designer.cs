@@ -55,6 +55,8 @@
             this.lblRecordsCount = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnNext = new System.Windows.Forms.Button();
+            this.btnPrev = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctrLoading)).BeginInit();
@@ -341,6 +343,8 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnNext);
+            this.panel4.Controls.Add(this.btnPrev);
             this.panel4.Controls.Add(this.lblTotalPaymentsFor);
             this.panel4.Controls.Add(this.lblRecordsCount);
             this.panel4.Controls.Add(this.label6);
@@ -393,6 +397,26 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 100;
             this.pictureBox1.TabStop = false;
+            // 
+            // btnNext
+            // 
+            this.btnNext.Location = new System.Drawing.Point(942, 10);
+            this.btnNext.Name = "btnNext";
+            this.btnNext.Size = new System.Drawing.Size(125, 32);
+            this.btnNext.TabIndex = 102;
+            this.btnNext.Text = "Next page";
+            this.btnNext.UseVisualStyleBackColor = true;
+            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            // 
+            // btnPrev
+            // 
+            this.btnPrev.Location = new System.Drawing.Point(768, 10);
+            this.btnPrev.Name = "btnPrev";
+            this.btnPrev.Size = new System.Drawing.Size(125, 32);
+            this.btnPrev.TabIndex = 101;
+            this.btnPrev.Text = "Previous page";
+            this.btnPrev.UseVisualStyleBackColor = true;
+            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
             // 
             // frmManagePayments
             // 
@@ -451,5 +475,7 @@
         private System.Windows.Forms.Label lblTotalPaymentsFor;
         private System.Windows.Forms.Label lblRecordsCount;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnNext;
+        private System.Windows.Forms.Button btnPrev;
     }
 }

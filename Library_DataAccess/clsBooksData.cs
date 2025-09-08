@@ -492,7 +492,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM vBooks where Language = @Language And IsDeleted != 1;"; // Fetch all undeleted books
+                    string query = "SELECT * FROM vBooks where Language = @Language;"; // Fetch all books
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -515,6 +515,59 @@ namespace Library_DataAccess
                 clsLogEvent.Log(ex);
             }
             return booksTable; // Return the filled DataTable
+        }
+
+        public static DataTable GetAllBooksPaged(string Language, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DataTable booksTable = new DataTable();
+            totalRecords = 0;
+            
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    
+                    // First, get the total count
+                    string countQuery = "SELECT COUNT(*) FROM vBooks WHERE Language = @Language";
+                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    {
+                        countCommand.Parameters.AddWithValue("@Language", Language);
+                        totalRecords = (int)countCommand.ExecuteScalar();
+                    }
+
+                    // Then get the paged data using OFFSET and FETCH (SQL Server 2012+)
+                    int offset = (pageNumber - 1) * pageSize;
+                    string query = @"SELECT * FROM vBooks 
+                                   WHERE Language = @Language 
+                                   ORDER BY BookID 
+                                   OFFSET @Offset ROWS 
+                                   FETCH NEXT @PageSize ROWS ONLY";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Language", Language);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
+                        
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            booksTable.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            return booksTable;
         }
         public static DataTable GetAllAuthors()
         {

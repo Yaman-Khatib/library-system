@@ -17,6 +17,15 @@ namespace The_Story_Corner_Project.Readers
     public partial class frmManageReaders : KryptonForm
     {
         private DataTable _dtReaders;
+        
+        // Pagination fields
+        private int _currentPage = 1;
+        private int _pageSize = 100;
+        private int _totalPages = 0;
+        private int _totalRecords = 0;
+        private string _currentFilterColumn = "";
+        private string _currentFilterValue = "";
+        
         public frmManageReaders()
         {
             InitializeComponent();
@@ -42,9 +51,21 @@ namespace The_Story_Corner_Project.Readers
             return clsReader.GetAllReaders();
         }
 
+        private async Task<DataTable> GetPagedDataFromDatabaseAsync()
+        {
+            // Simulate a delay to mimic a database call
+            await Task.Delay(2);
+            return clsReader.GetAllReadersPaged(_currentFilterColumn, _currentFilterValue, _currentPage, _pageSize, out _totalRecords);
+        }
+
         private async void LoadDataGridViewAsync()
         {
             cbFilterBy.SelectedIndex = 0;
+            await LoadCurrentPageAsync();
+        }
+
+        private async Task LoadCurrentPageAsync()
+        {
             try
             {
                 // Disable the DataGridView while loading data
@@ -53,17 +74,20 @@ namespace The_Story_Corner_Project.Readers
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
 
-                // Get the data from the database asynchronously
-                _dtReaders = await GetDataFromDatabaseAsync();
+                // Get the paged data from the database asynchronously
+                _dtReaders = await GetPagedDataFromDatabaseAsync();
 
                 // Bind the data to the DataGridView
                 dgvReaders.DataSource = _dtReaders;
+                
                 if(dgvReaders.RowCount > 0)
                 {
                     pctrLoading.Visible = false;
                 }
                 else
-                { pctrLoading.Visible = true; }
+                { 
+                    pctrLoading.Visible = true; 
+                }
             }
             catch (Exception ex)
             {
@@ -75,7 +99,8 @@ namespace The_Story_Corner_Project.Readers
                 // Re-enable the DataGridView
                 dgvReaders.Enabled = true;                
             }
-            lblRecordsCount.Text = dgvReaders.RowCount.ToString();
+            
+            UpdatePaginationInfo();
             StyleColumns();
         }
 
@@ -94,36 +119,77 @@ namespace The_Story_Corner_Project.Readers
 
         private void StyleColumns()
         {
-            dgvReaders.Columns["ReaderID"].HeaderText = "Reader ID";
-            dgvReaders.Columns["ReaderID"].Width = 110;
+            if (dgvReaders.Columns.Contains("ReaderID"))
+            {
+                dgvReaders.Columns["ReaderID"].HeaderText = "Reader ID";
+                dgvReaders.Columns["ReaderID"].Width = 110;
+            }
 
+            if (dgvReaders.Columns.Contains("AccountNumber"))
+            {
+                dgvReaders.Columns["AccountNumber"].HeaderText = "Account Number";
+                dgvReaders.Columns["AccountNumber"].Width = 160;
+            }
 
-            dgvReaders.Columns["AccountNumber"].HeaderText = "Account Number";
-            dgvReaders.Columns["AccountNumber"].Width = 160;
+            if (dgvReaders.Columns.Contains("FullName"))
+            {
+                dgvReaders.Columns["FullName"].HeaderText = "Full Name";
+                dgvReaders.Columns["FullName"].Width = 250;
+            }
 
-            dgvReaders.Columns["FullName"].HeaderText = "Full Name";
-            dgvReaders.Columns["FullName"].Width = 250;
+            if (dgvReaders.Columns.Contains("MobileNumber"))
+            {
+                dgvReaders.Columns["MobileNumber"].HeaderText = "Mobile Number";
+                dgvReaders.Columns["MobileNumber"].Width = 150;
+            }
 
-            dgvReaders.Columns["MobileNumber"].HeaderText = "Mobile Number";
-            dgvReaders.Columns["MobileNumber"].Width = 150;
+            if (dgvReaders.Columns.Contains("Phone"))
+            {
+                dgvReaders.Columns["Phone"].Width = 150;
+            }
 
-            dgvReaders.Columns["Phone"].Width = 150;
+            if (dgvReaders.Columns.Contains("Address"))
+            {
+                dgvReaders.Columns["Address"].Width = 260;
+            }
 
-            dgvReaders.Columns["Address"].Width = 260;
+            if (dgvReaders.Columns.Contains("SubscriptionStatus"))
+            {
+                dgvReaders.Columns["SubscriptionStatus"].HeaderText = "Subscription Status";
+                dgvReaders.Columns["SubscriptionStatus"].Width = 160;
+            }
+        }
 
-            dgvReaders.Columns["SubscriptionStatus"].HeaderText = "Subscription Status";
-            dgvReaders.Columns["SubscriptionStatus"].Width = 160;
+        private void UpdatePaginationInfo()
+        {
+            _totalPages = (int)Math.Ceiling((double)_totalRecords / _pageSize);
+            lblRecordsCount.Text = $"Page {_currentPage} of {_totalPages} ({_totalRecords} total records)";
+        }
 
+        private void GoToNextPage()
+        {
+            if (_currentPage < _totalPages)
+            {
+                _currentPage++;
+                LoadCurrentPageAsync();
+            }
+        }
 
-
+        private void GoToPreviousPage()
+        {
+            if (_currentPage > 1)
+            {
+                _currentPage--;
+                LoadCurrentPageAsync();
+            }
         }
 
 
 
         void _UpdateDataGridView()
         {
-            LoadDataGridViewAsync();
-            lblRecordsCount.Text = dgvReaders.RowCount.ToString();
+            _currentPage = 1; // Reset to first page
+            LoadCurrentPageAsync();
         }
         private void cbFilterBy_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -164,39 +230,17 @@ namespace The_Story_Corner_Project.Readers
                     FilterColumn = "Gender";
                     break;                
                 default:
-                    FilterColumn = "None";
+                    FilterColumn = "";
                     break;
             }           
 
-            if(FilterColumn == "None" || txtFilterValue.Text.Trim() == "")
-            {
-                _dtReaders.DefaultView.RowFilter = "";
-                lblRecordsCount.Text = dgvReaders.RowCount.ToString();
-                if (dgvReaders.RowCount > 0)
-                {
-                    pctrLoading.Visible = false;
-                }
-                else
-                { pctrLoading.Visible = true; }
-                return;
-            }
+            // Update current filter values
+            _currentFilterColumn = FilterColumn;
+            _currentFilterValue = txtFilterValue.Text.Trim();
             
-            if(FilterColumn == "ReaderID")
-            {
-                _dtReaders.DefaultView.RowFilter = String.Format("{0} = {1}",FilterColumn,txtFilterValue.Text.Trim());
-            }
-            else
-            {
-                _dtReaders.DefaultView.RowFilter = String.Format("{0} like '{1}%' ", FilterColumn, txtFilterValue.Text.ToString().Trim());
-            }
-            if (dgvReaders.RowCount > 0)
-            {
-                pctrLoading.Visible = false;
-            }
-            else
-            { pctrLoading.Visible = true; }
-
-
+            // Reset to first page and reload data
+            _currentPage = 1;
+            LoadCurrentPageAsync();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -349,12 +393,23 @@ namespace The_Story_Corner_Project.Readers
         {
             if(rbMale.Checked)
             {
-                _dtReaders.DefaultView.RowFilter = String.Format($"Gender = 'Male'");
+                _currentFilterColumn = "Gender";
+                _currentFilterValue = "Male";
+            }
+            else if(rbFemale.Checked)
+            {
+                _currentFilterColumn = "Gender";
+                _currentFilterValue = "Female";
             }
             else
             {
-                _dtReaders.DefaultView.RowFilter = String.Format($"Gender = 'Female'");
+                _currentFilterColumn = "";
+                _currentFilterValue = "";
             }
+            
+            // Reset to first page and reload data
+            _currentPage = 1;
+            LoadCurrentPageAsync();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -377,6 +432,16 @@ namespace The_Story_Corner_Project.Readers
             frmAddUpdateReader frm = new frmAddUpdateReader();
             frm.ShowDialog();
             _UpdateDataGridView();
+        }
+
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            GoToPreviousPage();
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            GoToNextPage();
         }
     }
     }

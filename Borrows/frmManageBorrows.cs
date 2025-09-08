@@ -19,15 +19,22 @@ namespace The_Story_Corner_Project.Borrows
     public partial class frmManageBorrows : KryptonForm
     {
         DataTable _dtBorrows;
+        private int _currentPage = 1;
+        private int _pageSize = 100;
+        private int _totalPages = 0;
+        private int _totalRecords = 0;
+        private clsBorrow.enBorrowStatus _currentStatus;
+        private DateTime _currentStartDate;
+        private DateTime _currentEndDate;
         public frmManageBorrows()
         {
             InitializeComponent();
         }
         void _ResetDefaultValues()
         {
-            dtpEndDate.MaxDate = DateTime.Now.AddMinutes(1);
-            dtpEndDate.Value = DateTime.Now;
-            dtpStartDate.Value = DateTime.Now.AddMonths(-5);
+            dtpEndDate.MaxDate = DateTime.Now.AddYears(1);
+            dtpEndDate.Value = DateTime.Now.AddYears(1);
+            dtpStartDate.Value = DateTime.Now.AddYears(-1);
             cbStatus.SelectedIndex = 0;
             cbFilterBy.SelectedIndex = 0;
             txtFilterValue.Visible = false;
@@ -62,12 +69,11 @@ namespace The_Story_Corner_Project.Borrows
                     return clsBorrow.enBorrowStatus.Unknown;
             }
         }
-        private async Task<DataTable> GetDataFromDatabaseAsync(string Language)
+        private async Task<DataTable> GetDataFromDatabaseAsync(int pageNumber, int pageSize)
         {
-
             // Simulate a delay to mimic a database call
             await Task.Delay(2);
-            return clsBorrow.GetAllBorrows(GetBorrowStatus(),dtpStartDate.Value,dtpEndDate.Value);
+            return clsBorrow.GetAllBorrowsPaged(_currentStatus, _currentStartDate, _currentEndDate, pageNumber, pageSize, out _totalRecords);
         }
 
         private async void LoadDataGridViewAsync()
@@ -75,6 +81,17 @@ namespace The_Story_Corner_Project.Borrows
             dgvBorrows.DataSource = null;
             cbFilterBy.SelectedIndex = 0;
             
+            // Set current filter parameters
+            _currentStatus = GetBorrowStatus();
+            _currentStartDate = dtpStartDate.Value;
+            _currentEndDate = dtpEndDate.Value;
+            _currentPage = 1; // Reset to first page
+            
+            await LoadCurrentPageAsync();
+        }
+
+        private async Task LoadCurrentPageAsync()
+        {
             try
             {
                 // Disable the DataGridView while loading data
@@ -83,8 +100,11 @@ namespace The_Story_Corner_Project.Borrows
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
 
-                // Get the data from the database asynchronously
-                _dtBorrows = await GetDataFromDatabaseAsync(cbStatus.Text);
+                // Get paged data from the database asynchronously
+                _dtBorrows = await GetDataFromDatabaseAsync(_currentPage, _pageSize);
+                
+                // Calculate total pages
+                _totalPages = (int)Math.Ceiling((double)_totalRecords / _pageSize);
 
                 // Bind the data to the DataGridView
                 dgvBorrows.DataSource = _dtBorrows;
@@ -93,7 +113,9 @@ namespace The_Story_Corner_Project.Borrows
                     pctrLoading.Visible = false;
                 }
                 else
-                { pctrLoading.Visible = true; }
+                { 
+                    pctrLoading.Visible = true; 
+                }
             }
             catch (Exception ex)
             {
@@ -105,44 +127,82 @@ namespace The_Story_Corner_Project.Borrows
                 // Re-enable the DataGridView
                 dgvBorrows.Enabled = true;
             }
-            lblRecordsCount.Text = dgvBorrows.RowCount.ToString();
+            
+            UpdatePaginationInfo();
             StyleColumns();
         }
         private void StyleColumns()
         {
-            dgvBorrows.Columns["BorrowID"].HeaderText = "Borrow ID";
-            dgvBorrows.Columns["BorrowID"].Width = 120;
-            dgvBorrows.Columns["FullName"].HeaderText = "Full Name";
-            dgvBorrows.Columns["FullName"].Width = 170;
+            // Check if DataGridView and columns exist before styling
+            if (dgvBorrows?.Columns == null) return;
 
-            dgvBorrows.Columns["AccountNumber"].HeaderText = "Account Number";
-            dgvBorrows.Columns["AccountNumber"].Width = 140;
+            if (dgvBorrows.Columns.Contains("BorrowID"))
+            {
+                dgvBorrows.Columns["BorrowID"].HeaderText = "Borrow ID";
+                dgvBorrows.Columns["BorrowID"].Width = 120;
+            }
 
-            dgvBorrows.Columns["Title"].Width = 150;
+            if (dgvBorrows.Columns.Contains("FullName"))
+            {
+                dgvBorrows.Columns["FullName"].HeaderText = "Full Name";
+                dgvBorrows.Columns["FullName"].Width = 170;
+            }
 
-            dgvBorrows.Columns["SerialNumber"].HeaderText = "Serial Number";
-            dgvBorrows.Columns["SerialNumber"].Width = 150;
+            if (dgvBorrows.Columns.Contains("AccountNumber"))
+            {
+                dgvBorrows.Columns["AccountNumber"].HeaderText = "Account Number";
+                dgvBorrows.Columns["AccountNumber"].Width = 140;
+            }
 
-            dgvBorrows.Columns["LanguageName"].HeaderText = "Language";
+            if (dgvBorrows.Columns.Contains("Title"))
+            {
+                dgvBorrows.Columns["Title"].Width = 150;
+            }
+
+            if (dgvBorrows.Columns.Contains("SerialNumber"))
+            {
+                dgvBorrows.Columns["SerialNumber"].HeaderText = "Serial Number";
+                dgvBorrows.Columns["SerialNumber"].Width = 150;
+            }
+
+            if (dgvBorrows.Columns.Contains("LanguageName"))
+            {
+                dgvBorrows.Columns["LanguageName"].HeaderText = "Language";
+            }
+
+            if (dgvBorrows.Columns.Contains("BorrowDate"))
+            {
+                dgvBorrows.Columns["BorrowDate"].HeaderText = "Borrow Date";
+                dgvBorrows.Columns["BorrowDate"].Width = 120;
+            }
+
+            if (dgvBorrows.Columns.Contains("DueDate"))
+            {
+                dgvBorrows.Columns["DueDate"].HeaderText = "Due Date";
+                dgvBorrows.Columns["DueDate"].Width = 120;
+            }
+
+            if (dgvBorrows.Columns.Contains("ActualReturnDate"))
+            {
+                dgvBorrows.Columns["ActualReturnDate"].HeaderText = "Return date";
+                dgvBorrows.Columns["ActualReturnDate"].Width = 130;
+            }
+
+            if (dgvBorrows.Columns.Contains("Status"))
+            {
+                dgvBorrows.Columns["Status"].Width = 140;
+            }
+
+            if (dgvBorrows.Columns.Contains("DidExtended"))
+            {
+                dgvBorrows.Columns["DidExtended"].HeaderText = "Did extended";
+            }
             
-
-
-            dgvBorrows.Columns["BorrowDate"].HeaderText = "Borrow Date";
-            dgvBorrows.Columns["BorrowDate"].Width = 120;
-
-            dgvBorrows.Columns["DueDate"].HeaderText = "Due Date";
-            dgvBorrows.Columns["DueDate"].Width = 120;
-
-
-            dgvBorrows.Columns["ActualReturnDate"].HeaderText = "Return date";
-            dgvBorrows.Columns["ActualReturnDate"].Width = 130;
-
-            dgvBorrows.Columns["Status"].Width = 140;
-
-            dgvBorrows.Columns["DidExtended"].HeaderText = "Did extended";
-            
-            dgvBorrows.Columns["CreatedByUser"].HeaderText = "Created by user";
-            dgvBorrows.Columns["CreatedByUser"].Width = 130;
+            if (dgvBorrows.Columns.Contains("CreatedByUser"))
+            {
+                dgvBorrows.Columns["CreatedByUser"].HeaderText = "Created by user";
+                dgvBorrows.Columns["CreatedByUser"].Width = 130;
+            }
 
             //When the borrow is not yet returned hide the Actual return date and show due date
             if(cbStatus.SelectedIndex == 0 || cbStatus.SelectedIndex == 1)
@@ -456,6 +516,61 @@ namespace The_Story_Corner_Project.Borrows
         private void btnAddBorrow_Click(object sender, EventArgs e)
         {
 
+        }
+
+        #region Pagination Methods
+
+        private void UpdatePaginationInfo()
+        {
+            lblRecordsCount.Text = $"Page {_currentPage} of {_totalPages} ({_totalRecords} total records)";
+            
+            // Enable/disable navigation buttons (if they exist)
+            // Note: Pagination buttons need to be added to the form designer
+            // For now, we'll just update the label with pagination info
+        }
+
+        private async void GoToNextPage()
+        {
+            if (_currentPage < _totalPages)
+            {
+                _currentPage++;
+                await LoadCurrentPageAsync();
+            }
+        }
+
+        private async void GoToPreviousPage()
+        {
+            if (_currentPage > 1)
+            {
+                _currentPage--;
+                await LoadCurrentPageAsync();
+            }
+        }
+
+        #endregion
+
+        #region Pagination Event Handlers
+
+        private void btnPrevPage_Click(object sender, EventArgs e)
+        {
+            GoToPreviousPage();
+        }
+
+        private void btnNextPage_Click(object sender, EventArgs e)
+        {
+            GoToNextPage();
+        }
+
+        #endregion
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            GoToNextPage();
+        }
+
+        private void btnPrev_Click(object sender, EventArgs e)
+        {
+            GoToPreviousPage();
         }
     }
 }

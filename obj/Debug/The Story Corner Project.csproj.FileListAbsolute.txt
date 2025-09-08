@@ -39,7 +39,6 @@ C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.U
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Users.frmShowUserInfo.resources
 C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.GenerateResource.cache
 C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.CoreCompileInputs.cache
-C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.csproj.CopyComplete
 C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.exe
 C:\learning_coding\The Story Corner Project\obj\Debug\The Story Corner Project.pdb
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmMiniAddNewLanguage.resources
@@ -69,3 +68,4 @@ C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.C
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Courses.frmCourseDetatils.resources
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmBookSales.resources
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmSaleBook.resources
+C:\learning_coding\The Story Corner Project\obj\Debug\The Stor.C14ADB1B.Up2Date

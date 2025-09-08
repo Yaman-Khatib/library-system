@@ -274,7 +274,11 @@ namespace Library_Business
         public static DataTable GetAllBorrows(enBorrowStatus statusIndex,DateTime startDate,DateTime endDate)
         {
             return clsBorrowsData.GetAllBorrows((int)statusIndex, startDate, endDate);
+        }
 
+        public static DataTable GetAllBorrowsPaged(enBorrowStatus statusIndex, DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
+        {
+            return clsBorrowsData.GetAllBorrowsPaged((int)statusIndex, startDate, endDate, pageNumber, pageSize, out totalRecords);
         }
 
         public static bool ReturnBook(int borrowID, string Notes)

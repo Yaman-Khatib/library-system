@@ -14,6 +14,7 @@ using The_Story_Corner_Project.Global_Classes;
 using The_Story_Corner_Project.Borrows;
 using The_Story_Corner_Project.Payments;
 using Library_Business;
+using Library_Business.Services;
 using The_Story_Corner_Project.Library_settings;
 using The_Story_Corner_Project.Courses;
 using The_Story_Corner_Project.Books;
@@ -30,11 +31,17 @@ namespace The_Story_Corner_Project
     {
 
         private System.Windows.Forms.Panel dimmingOverlay;
+        private readonly IBackupRestoreService _backupRestoreService;
 
         // In MainForm's constructor or Load event
         public frmMainMenu()
         {
             InitializeComponent();
+
+            // Initialize backup/restore service
+            _backupRestoreService = new BackupRestoreService();
+            _backupRestoreService.ProgressChanged += OnBackupRestoreProgressChanged;
+            _backupRestoreService.OperationCompleted += OnBackupRestoreCompleted;
 
             // Initialize and configure the dimming overlay panel
             dimmingOverlay = new Panel
@@ -51,6 +58,11 @@ namespace The_Story_Corner_Project
         public frmMainMenu(bool DataBaseExists)
         {
             InitializeComponent();
+
+            // Initialize backup/restore service
+            _backupRestoreService = new BackupRestoreService();
+            _backupRestoreService.ProgressChanged += OnBackupRestoreProgressChanged;
+            _backupRestoreService.OperationCompleted += OnBackupRestoreCompleted;
 
             // Initialize and configure the dimming overlay panel
             dimmingOverlay = new Panel
@@ -295,7 +307,6 @@ namespace The_Story_Corner_Project
 
         private async void BackUpData_Click(object sender, EventArgs e)
         {
-
             DialogResult backupResult = MessageBox.Show(
     "Do you want to backup the current data to a backup file?",
     "Confirm Backup",
@@ -310,29 +321,43 @@ namespace The_Story_Corner_Project
             // Open the Save File Dialog for selecting the backup location
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                saveFileDialog.Filter = "Backup Files All Files (*.*)|*.*";
-
+                saveFileDialog.Filter = "Backup Files (*.bak)|*.bak|All Files (*.*)|*.*";
                 saveFileDialog.Title = "Select Backup File Location";
-                saveFileDialog.FileName = "DatabaseBackup.bak";
+                saveFileDialog.FileName = $"LibrarySystemDB_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.bak";
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string backupPath = saveFileDialog.FileName;
 
-                    // Notify the user that the backup has started
-                    MessageBox.Show("Data backup has started.", "Backup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    try
+                    {
+                        // Show progress dialog
+                        ShowProgressDialog("Creating backup...", OperationType.Backup);
 
-                    // Perform the backup asynchronously
-                    bool success = await BackupDatabaseAsync(backupPath);
+                        // Perform the backup using the service
+                        var result = await _backupRestoreService.CreateBackupAsync(backupPath);
+
+                        HideProgressDialog();
 
                     // Notify the user about the result
-                    if (success)
-                    {
-                        MessageBox.Show("Successfully backed up the data.", "Backup Completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (result.IsSuccess)
+                        {
+                            string message = $"Successfully backed up the data.\n\n" +
+                                           $"File: {result.BackupFilePath}\n" +
+                                           $"Size: {FormatFileSize(result.BackupFileSize)}\n" +
+                                           $"Duration: {result.Duration.TotalSeconds:F1} seconds";
+                            
+                            MessageBox.Show(message, "Backup Completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Data backup failed: {result.ErrorMessage}", "Backup Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        MessageBox.Show("Data backup failed. Please try again.", "Backup Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        HideProgressDialog();
+                        MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Backup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
@@ -343,162 +368,147 @@ namespace The_Story_Corner_Project
             }
         }
 
-            private async Task<bool> BackupDatabaseAsync(string backupPath)
+        #region Progress Dialog Methods
+
+        private Form _progressDialog;
+        private Label _progressLabel;
+        private ProgressBar _progressBar;
+
+        private void ShowProgressDialog(string initialMessage, OperationType operationType)
+        {
+            _progressDialog = new Form
             {
-                return await Task.Run(() =>
-                {
-                    try
-                    {
-                        // Define your database connection string
-                        string connectionString = clsConnectionString.ConnectionString;
+                Text = operationType == OperationType.Backup ? "Creating Backup" : "Restoring Database",
+                Size = new Size(400, 150),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                ShowInTaskbar = false
+            };
 
-                        // SQL command for backing up the database
-                        string backupCommand = $"BACKUP DATABASE [LibrarySystemDB] TO DISK = '{backupPath}' WITH FORMAT";
+            _progressLabel = new Label
+            {
+                Text = initialMessage,
+                Location = new Point(20, 20),
+                Size = new Size(350, 20),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
 
-                        using (SqlConnection connection = new SqlConnection(connectionString))
-                        {
-                            SqlCommand command = new SqlCommand(backupCommand, connection);
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
+            _progressBar = new ProgressBar
+            {
+                Location = new Point(20, 50),
+                Size = new Size(350, 23),
+                Style = ProgressBarStyle.Marquee,
+                MarqueeAnimationSpeed = 30
+            };
 
-                        return true; // Backup succeeded
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the exception (optional)
-                        MessageBox.Show(ex.Message);
-                        clsLogEvent.Log(ex);
-                        return false; // Backup failed
-                    }
-                });
+            _progressDialog.Controls.Add(_progressLabel);
+            _progressDialog.Controls.Add(_progressBar);
+            _progressDialog.Show(this);
+        }
 
+        private void HideProgressDialog()
+        {
+            _progressDialog?.Close();
+            _progressDialog?.Dispose();
+            _progressDialog = null;
+        }
+
+        private void UpdateProgressDialog(int percentage, string message)
+        {
+            if (_progressDialog != null && !_progressDialog.IsDisposed)
+            {
+                _progressLabel.Text = message;
+                _progressBar.Style = ProgressBarStyle.Continuous;
+                _progressBar.Value = Math.Min(100, Math.Max(0, percentage));
+            }
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void OnBackupRestoreProgressChanged(object sender, BackupRestoreProgressEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => OnBackupRestoreProgressChanged(sender, e)));
+                return;
             }
 
-    //    private bool DatabaseExists(SqlConnection connection, string databaseName)
-    //    {
-    //        string query = $"SELECT database_id FROM sys.databases WHERE Name = @DatabaseName";
-    //        using (SqlCommand command = new SqlCommand(query, connection))
-    //        {
-    //            command.Parameters.AddWithValue("@DatabaseName", databaseName);
-    //            return command.ExecuteScalar() != null;
-    //        }
-    //    }
+            UpdateProgressDialog(e.ProgressPercentage, e.StatusMessage);
+        }
 
-    //    private void KillDatabaseConnections(SqlConnection connection, string databaseName)
-    //    {
-    //        string killConnectionsQuery = @"
-    //    DECLARE @kill VARCHAR(MAX) = '';
-    //    SELECT @kill = @kill + 'KILL ' + CONVERT(VARCHAR(5), session_id) + ';'
-    //    FROM sys.dm_exec_sessions
-    //    WHERE database_id = DB_ID(@DatabaseName);
-
-    //    IF @kill <> ''
-    //        EXEC(@kill);
-    //";
-
-    //        // Temporarily change the database context to "master"
-    //        if (connection.State == ConnectionState.Closed)
-    //            connection.Open();
-
-    //        connection.ChangeDatabase("master");
-
-    //        using (SqlCommand command = new SqlCommand(killConnectionsQuery, connection))
-    //        {
-    //            command.Parameters.AddWithValue("@DatabaseName", databaseName);
-    //            command.ExecuteNonQuery();
-    //        }
-    //    }
-
-
-    //    private void DropDatabase(SqlConnection connection, string databaseName)
-    //    {
-    //        string dropQuery = $"DROP DATABASE [{databaseName}]";
-    //        using (SqlCommand command = new SqlCommand(dropQuery, connection))
-    //        {
-    //            command.ExecuteNonQuery();
-    //        }
-    //    }
-
-    //    private void RestoreDatabase(SqlConnection connection, string backupFilePath, string databaseName)
-    //    {
-    //        string restoreQuery = $@"
-    //    RESTORE DATABASE [{databaseName}]
-    //    FROM DISK = @BackupFilePath
-    //    WITH REPLACE, MOVE '{databaseName}_Data' TO 'C:\\SQLData\\{databaseName}.mdf',
-    //         MOVE '{databaseName}_Log' TO 'C:\\SQLData\\{databaseName}.ldf';
-    //";
-    //        using (SqlCommand command = new SqlCommand(restoreQuery, connection))
-    //        {
-    //            command.Parameters.AddWithValue("@BackupFilePath", backupFilePath);
-    //            command.ExecuteNonQuery();
-    //        }
-    //    }
-
-
-        //private async void RestoreData_Click(object sender, EventArgs e)
-        //{
-        //    using (OpenFileDialog openFileDialog = new OpenFileDialog())
-        //    {
-        //        openFileDialog.Filter = "Backup Files (*.bak)|*.bak";
-        //        openFileDialog.Title = "Select Backup File";
-
-        //        if (openFileDialog.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string backupFilePath = openFileDialog.FileName;
-        //            string targetDatabaseName = "LibrarySystemDB";
-
-        //            try
-        //            {
-        //                // Display a message while restoring
-        //                MessageBox.Show("Restoring database... Please wait.", "Restore Data", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-        //                using (SqlConnection connection = new SqlConnection(clsConnectionString.ConnectionString))
-        //                {
-        //                    await connection.OpenAsync();
-
-        //                    // Step 1: Check if the target database exists
-        //                    if (DatabaseExists(connection, targetDatabaseName))
-        //                    {
-        //                        // Step 2: Cut off connections and drop the existing database
-        //                        KillDatabaseConnections(connection, targetDatabaseName);
-        //                        DropDatabase(connection, targetDatabaseName);
-        //                    }
-
-        //                    // Step 3: Restore the backup file as the target database
-        //                    RestoreDatabase(connection, backupFilePath, targetDatabaseName);
-
-        //                    MessageBox.Show("Database restored successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                MessageBox.Show($"Error: {ex.Message}", "Restore Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            }
-        //        }
-        //    }
-        //}
-
-        private void RestoreData_Click(object sender, EventArgs e)
+        private void OnBackupRestoreCompleted(object sender, BackupRestoreCompletedEventArgs e)
         {
-            //bool AvailableDataBase
-            //using (SqlConnection connection = new SqlConnection(clsConnectionString.ConnectionString))
-            //{
-            //    connection.Open();
-            //    clsGlobal.DatabaseExists(connection, "LibrarySystemDB");
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => OnBackupRestoreCompleted(sender, e)));
+                return;
+            }
 
-            //}
+            // Progress dialog will be hidden by the calling method
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private string FormatFileSize(long bytes)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+            double len = bytes;
+            int order = 0;
+            while (len >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                len = len / 1024;
+            }
+            return $"{len:0.##} {sizes[order]}";
+        }
+
+        private void ShowAccessDeniedHelp()
+        {
+            string helpMessage = "ACCESS DENIED ERROR - SOLUTIONS:\n\n" +
+                               "1. MOVE THE BACKUP FILE:\n" +
+                               "   • Copy the backup file from OneDrive to a local folder\n" +
+                               "   • Suggested locations:\n" +
+                               "     - C:\\Temp\\\n" +
+                               "     - C:\\Backups\\\n" +
+                               "     - C:\\Users\\" + Environment.UserName + "\\Documents\\\n\n" +
+                               "2. CREATE A SAFE FOLDER:\n" +
+                               "   • Create C:\\Backups\\ folder\n" +
+                               "   • Copy your backup file there\n" +
+                               "   • Try restore again\n\n" +
+                               "3. WHY THIS HAPPENS:\n" +
+                               "   • OneDrive folders have restricted permissions\n" +
+                               "   • SQL Server cannot access cloud-synced folders\n" +
+                               "   • Local folders work best for database operations";
+
+            MessageBox.Show(helpMessage, "Access Denied - Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        #endregion
+
+
+
+
+        private async void RestoreData_Click(object sender, EventArgs e)
+        {
+            // Check permissions
             if (clsGlobal.CurrentUser != null)
             {
                 if (!clsGlobal.DoesCurrentUserHavePermission(clsUser.enPermissions.FullAccess))
                 {
-                    MessageBox.Show("You don't have permissions to retore data backup \n Please contact your admin!", "No permissions", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("You don't have permissions to restore data backup.\nPlease contact your admin!", "No permissions", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
 
             DialogResult restoreResult = MessageBox.Show(
-    "Are you sure you want to restore data from the backup file? This operation will overwrite the current database.",
+                "Are you sure you want to restore data from the backup file?\n\n" +
+                "WARNING: This operation will overwrite the current database and cannot be undone!",
     "Confirm Restore",
     MessageBoxButtons.YesNo,
     MessageBoxIcon.Warning);
@@ -508,93 +518,93 @@ namespace The_Story_Corner_Project
                 return;
             }
 
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                Filter = "Backup Files All Files (*.*)|*.*",
-                Title = "Select a backup file"
-            };
+                openFileDialog.Filter = "Backup Files (*.bak)|*.bak|All Files (*.*)|*.*";
+                openFileDialog.Title = "Select a backup file";
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string backupFilePath = openFileDialog.FileName;
-                RestoreDatabase(backupFilePath);
-            }
-        }
 
-        private void RestoreDatabase(string backupFilePath)
-        {
-            if (clsGlobal.CurrentUser != null)
-            {
-                if (!clsGlobal.DoesCurrentUserHavePermission(clsUser.enPermissions.FullAccess))
-                {
-                    MessageBox.Show("You don't have permissions to retore data backup \n Please contact your admin!", "No permissions", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
+                    try
+                    {
+                        // Show progress dialog
+                        ShowProgressDialog("Validating backup file...", OperationType.Restore);
+
+                        // First validate the backup file
+                        var validationResult = await _backupRestoreService.ValidateBackupFileAsync(backupFilePath);
+                        
+                        if (!validationResult.IsSuccess)
+                        {
+                            HideProgressDialog();
+                            
+                            // Check if it's an access denied error
+                            if (validationResult.ErrorMessage.Contains("Access is denied") || 
+                                validationResult.ErrorMessage.Contains("restricted location"))
+                            {
+                                MessageBox.Show($"Access Error: {validationResult.ErrorMessage}", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                ShowAccessDeniedHelp();
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Invalid backup file: {validationResult.ErrorMessage}", "Validation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            return;
+                        }
+
+                        // Get backup file info
+                        var backupInfo = await _backupRestoreService.GetBackupFileInfoAsync(backupFilePath);
+                        
+                        if (!backupInfo.IsValid)
+                        {
+                            HideProgressDialog();
+                            MessageBox.Show($"Backup file is corrupted: {backupInfo.ValidationError}", "Invalid Backup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        // Show backup info and confirm
+                        string infoMessage = $"Backup File Information:\n\n" +
+                                           $"Database: {backupInfo.DatabaseName}\n" +
+                                           $"Backup Date: {backupInfo.BackupDate:yyyy-MM-dd HH:mm:ss}\n" +
+                                           $"File Size: {FormatFileSize(backupInfo.FileSize)}\n" +
+                                           $"Backup Type: {backupInfo.BackupType}\n\n" +
+                                           $"Do you want to proceed with the restore?";
+
+                        DialogResult finalConfirm = MessageBox.Show(infoMessage, "Confirm Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        
+                        if (finalConfirm != DialogResult.Yes)
+                        {
+                            HideProgressDialog();
+                            return;
+                        }
+
+                        // Perform the restore
+                        var result = await _backupRestoreService.RestoreDatabaseAsync(backupFilePath);
+
+                        HideProgressDialog();
+
+                        if (result.IsSuccess)
+                        {
+                            MessageBox.Show("Data restoration has been successfully completed.\n\nThe program will now close. Please reopen it to continue.", 
+                                "Restore Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            this.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Data restoration failed: {result.ErrorMessage}", "Restore Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        HideProgressDialog();
+                        MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Restore Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
-            string connectionString = clsConnectionString.MasterConnectionString; // Replace with your actual connection string
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-
-                // Check if the database exists
-                if (DatabaseExists(connection, "LibrarySystemDB"))
-                {
-                    // Drop the existing database
-                    DropDatabase(connection, "LibrarySystemDB");
-                }
-
-                // Restore the database with MOVE options
-                string restoreQuery = $@"
-        RESTORE DATABASE LibrarySystemDB 
-        FROM DISK = '{backupFilePath}' 
-        WITH REPLACE,
-        MOVE 'LibraryManagement' TO 'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\LibrarySystemDB.mdf',
-        MOVE 'LibraryManagement_Log' TO 'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\LibrarySystemDB_Log.ldf'";
-
-                using (SqlCommand command = new SqlCommand(restoreQuery, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-                EnableMainButtons();
-                MessageBox.Show("Data restoration has been successfully completed. The program will now close. Please reopen it to continue.", "Restore Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
-            }
         }
 
-        private bool DatabaseExists(SqlConnection connection, string databaseName)
-        {
-            string query = $@"
-        IF EXISTS (SELECT name 
-                   FROM master.dbo.sysdatabases 
-                   WHERE name = '{databaseName}')
-        SELECT 1
-        ELSE
-        SELECT 0";
 
-            using (SqlCommand command = new SqlCommand(query, connection))
-            {
-                return (int)command.ExecuteScalar() == 1;
-            }
-        }
-
-        private void DropDatabase(SqlConnection connection, string databaseName)
-        {
-            // Switch to master database to execute the DROP DATABASE command
-            using (SqlCommand useMaster = new SqlCommand("USE master;", connection))
-            {
-                useMaster.ExecuteNonQuery();
-            }
-
-            string dropQuery = $@"
-        ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-        DROP DATABASE [{databaseName}]";
-
-            using (SqlCommand command = new SqlCommand(dropQuery, connection))
-            {
-                command.ExecuteNonQuery();
-            }
-        }
 
         private void booksToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -603,265 +613,6 @@ namespace The_Story_Corner_Project
 
 
 
-        //private bool DatabaseExists(string databaseName)
-        //{
-        //    string connectionString = clsConnectionString.ConnectionString;
-
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        string query = $"SELECT database_id FROM sys.databases WHERE name = '{databaseName}'";
-        //        SqlCommand command = new SqlCommand(query, connection);
-        //        return command.ExecuteScalar() != null;
-        //    }
-        //}
-        //private void DropDatabase(string databaseName)
-        //{
-        //    string connectionString = clsConnectionString.ConnectionString;
-
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        SqlCommand dropCommand = new SqlCommand($"DROP DATABASE IF EXISTS [{databaseName}]", connection);
-        //        dropCommand.ExecuteNonQuery();
-        //    }
-        //}
-
-        //private void ReplaceOriginalDatabase(string tempDatabaseName, string originalDatabaseName)
-        //{
-        //    string connectionString = clsConnectionString.ConnectionString;
-
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-
-        //        // First, switch to master database to avoid being connected to the database you're trying to drop
-        //        SqlCommand switchDatabaseCommand = new SqlCommand("USE master;", connection);
-        //        switchDatabaseCommand.ExecuteNonQuery();
-
-        //        // Kill all active connections to the original database
-        //        SqlCommand killConnectionsCommand = new SqlCommand($@"
-        //    DECLARE @spid INT;
-        //    DECLARE kill_cursor CURSOR FOR
-        //    SELECT spid
-        //    FROM sys.sysprocesses
-        //    WHERE dbid = DB_ID('{originalDatabaseName}');
-        //    OPEN kill_cursor;
-        //    FETCH NEXT FROM kill_cursor INTO @spid;
-        //    WHILE @@FETCH_STATUS = 0
-        //    BEGIN
-        //        EXEC('KILL ' + @spid);
-        //        FETCH NEXT FROM kill_cursor INTO @spid;
-        //    END
-        //    CLOSE kill_cursor;
-        //    DEALLOCATE kill_cursor;", connection);
-
-        //        killConnectionsCommand.ExecuteNonQuery();
-
-        //        // Set the original database to SINGLE_USER mode to disconnect active users, if necessary
-        //        SqlCommand setSingleUserCommand = new SqlCommand($"ALTER DATABASE [{originalDatabaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE", connection);
-        //        setSingleUserCommand.ExecuteNonQuery();
-
-        //        // Drop the original database
-        //        SqlCommand dropCommand = new SqlCommand($"DROP DATABASE IF EXISTS [{originalDatabaseName}]", connection);
-        //        dropCommand.ExecuteNonQuery();
-
-        //        // Rename the temporary database to the original name
-        //        SqlCommand renameCommand = new SqlCommand($"ALTER DATABASE [{tempDatabaseName}] MODIFY NAME = [{originalDatabaseName}]", connection);
-        //        renameCommand.ExecuteNonQuery();
-        //    }
-        //}
-
-
-
-        //private bool ValidateDatabaseSchema(string databaseName)
-        //{
-        //    try
-        //    {
-        //        string connectionString = $"{clsConnectionString.ConnectionString};Initial Catalog={databaseName}";
-
-        //        using (SqlConnection connection = new SqlConnection(connectionString))
-        //        {
-        //            connection.Open();
-
-        //            // Example: Validate that required tables exist
-        //            string[] requiredTables = { "People", "Users", "Readers","Subscriptions","Books","Payments" };
-        //            foreach (string table in requiredTables)
-        //            {
-        //                string query = $"SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{table}'";
-        //                SqlCommand command = new SqlCommand(query, connection);
-        //                if (command.ExecuteScalar() == null)
-        //                {
-        //                    return false; // Table missing
-        //                }
-        //            }
-
-        //            // Example: Validate column existence (extend as needed)
-        //            // Additional checks for column names, data types, etc., can be implemented here
-
-        //            return true; // Validation passed
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        clsLogEvent.Log(ex);
-        //        MessageBox.Show($"Error: {ex.Message}", "Restore Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return false; // Validation failed
-
-        //    }
-        //}
-
-        //private async Task<bool> RestoreDatabaseWithNewNameAsync(string backupFilePath, string newDatabaseName)
-        //{
-        //    return await Task.Run(() =>
-        //    {
-        //        try
-        //        {
-        //            string connectionString = clsConnectionString.ConnectionString;
-
-        //            // Logical file names of the database in the backup
-        //            string logicalDataFileName = "LibraryManagement";       // Replace with your actual logical name
-        //            string logicalLogFileName = "LibraryManagement_log";   // Replace with your actual logical name
-
-        //            // New file paths for the restored database
-        //            string newMdfPath = $@"C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\{newDatabaseName}.mdf";
-        //            string newLdfPath = $@"C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\{newDatabaseName}_log.ldf";
-
-        //            // SQL commands
-        //            string setSingleUserQuery = $@"
-        //        ALTER DATABASE {newDatabaseName} 
-        //        SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
-
-        //            string restoreQuery = $@"
-        //        RESTORE DATABASE {newDatabaseName}
-        //        FROM DISK = '{backupFilePath}'
-        //        WITH MOVE '{logicalDataFileName}' TO '{newMdfPath}',
-        //             MOVE '{logicalLogFileName}' TO '{newLdfPath}',
-        //             REPLACE,
-        //             RECOVERY;";
-
-        //            string setMultiUserQuery = $@"
-        //        ALTER DATABASE {newDatabaseName} 
-        //        SET MULTI_USER;";
-
-        //            using (SqlConnection connection = new SqlConnection(connectionString))
-        //            {
-        //                connection.Open();
-
-        //                // Set to single-user mode to terminate active connections
-        //                using (SqlCommand command = new SqlCommand(setSingleUserQuery, connection))
-        //                {
-        //                    command.ExecuteNonQuery();
-        //                }
-
-        //                // Restore the database
-        //                using (SqlCommand command = new SqlCommand(restoreQuery, connection))
-        //                {
-        //                    command.ExecuteNonQuery();
-        //                }
-
-        //                // Set back to multi-user mode
-        //                using (SqlCommand command = new SqlCommand(setMultiUserQuery, connection))
-        //                {
-        //                    command.ExecuteNonQuery();
-        //                }
-        //            }
-
-        //            return true;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            // Log or show the exception message for debugging
-        //            clsLogEvent.Log(ex);
-        //            return false;
-        //        }
-        //    });
-        //}
-
-        //private async void RestoreData_Click(object sender, EventArgs e)
-        //{
-
-        //    using (OpenFileDialog openFileDialog = new OpenFileDialog())
-        //    {
-        //        openFileDialog.Filter = "Backup Files (*.bak)|*.bak";
-        //        openFileDialog.Title = "Select Backup File";
-
-        //        if (openFileDialog.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string backupFilePath = openFileDialog.FileName;
-
-        //            try
-        //            {
-        //                MessageBox.Show("Restoring data... Please wait.", "Restore Data", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-        //                // Step 1: Restore to a temporary database
-        //                string tempDatabaseName = "TempRestoreDB";
-        //                bool restoreSuccess = await RestoreDatabaseWithNewNameAsync(backupFilePath, tempDatabaseName);
-        //                if (restoreSuccess)
-        //                {
-        //                    // Check if the original database exists
-        //                    bool originalDatabaseExists = DatabaseExists("LibraryManagement");
-
-        //                    if (originalDatabaseExists)
-        //                    {
-        //                        // Validate against the existing database schema
-        //                        if (ValidateDatabaseSchema(tempDatabaseName))
-        //                        {
-        //                            // Replace the original database
-        //                            ReplaceOriginalDatabase(tempDatabaseName, "LibraryManagement");
-        //                            MessageBox.Show("Database restored successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //                        }
-        //                        else
-        //                        {
-        //                            MessageBox.Show("The restored database is incompatible with the application schema.", "Validation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //                            DropDatabase(tempDatabaseName); // Cleanup temporary database
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-
-        //                        // Rename the temporary database to the target name
-        //                        RenameDatabase(tempDatabaseName, "LibraryManagement");
-        //                        MessageBox.Show("Database restored successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    MessageBox.Show("Failed to restore the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //                }
-
-
-
-
-        //            }
-
-        //            catch (Exception ex)
-        //            {
-        //                clsLogEvent.Log(ex);
-        //                MessageBox.Show($"Error: {ex.Message}", "Restore Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            }
-        //        } 
-        //    }
-
-        //    }
-
-
-        //private void RenameDatabase(string currentName, string newName)
-        //{
-        //    string connectionString = clsConnectionString.ConnectionString;
-
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        string renameQuery = $@"
-        //    ALTER DATABASE [{currentName}]
-        //    MODIFY NAME = [{newName}]";
-
-        //        SqlCommand command = new SqlCommand(renameQuery, connection);
-        //        command.ExecuteNonQuery();
-        //    }
-        //}
 
 
     }

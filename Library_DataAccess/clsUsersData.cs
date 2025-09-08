@@ -94,8 +94,7 @@ namespace Library_DataAccess
             ref string UserName,
             ref string Password,
             ref int? PersonID,
-            ref int? Permissions,
-            ref bool isDeleted)
+            ref int? Permissions)
         {
             bool isFound = false;
             try
@@ -116,7 +115,6 @@ namespace Library_DataAccess
                                 Password = reader["Password"].ToString();
                                 Permissions = (int)reader["Permissions"];
                                 UserName = reader["UserName"].ToString();
-                                isDeleted = (bool)reader["isDeleted"];
                                 isFound = true;
                             }
                             else
@@ -150,8 +148,7 @@ namespace Library_DataAccess
             ref int? UserID,
             ref string UserName,
             ref string Password,
-            ref int? Permissions,
-            ref bool isDeleted
+            ref int? Permissions
             )
         {
             bool isFound = false;
@@ -173,7 +170,6 @@ namespace Library_DataAccess
                                 Password = reader["Password"].ToString();
                                 Permissions = (int)reader["Permissions"];
                                 UserName = reader["UserName"].ToString();
-                                isDeleted = (bool)reader["isDeleted"];
                                 isFound = true;
                             }
                             else
@@ -207,7 +203,7 @@ namespace Library_DataAccess
     ref int? userID,
     ref int? personID,
     ref string accountNumber,
-    ref int? permissions,ref bool IsDeleted)
+    ref int? permissions)
         {
             bool isAuthenticated = false; // Assume the user is not authenticated
             try
@@ -215,7 +211,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT UserID, PersonID,Permissions,IsDeleted " +
+                    string query = "SELECT UserID, PersonID,Permissions " +
                                    "FROM users WHERE UserName = @UserName AND Password = @Password";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
@@ -231,7 +227,6 @@ namespace Library_DataAccess
                                 userID = (int)reader["UserID"];
                                 personID = (int)reader["PersonID"];                                
                                 permissions = reader["Permissions"] != DBNull.Value ? (int?)reader["Permissions"] : null;
-                                IsDeleted = (bool)reader["IsDeleted"];
                                 isAuthenticated = true; // User is authenticated
                             }
                             else
@@ -241,7 +236,6 @@ namespace Library_DataAccess
                                 personID = null;
                                 accountNumber = null;
                                 permissions = null;
-                                IsDeleted = false;
                             }
                         }
                     }
@@ -269,7 +263,7 @@ namespace Library_DataAccess
             using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM vUsersInfo where IsDeleted != 1"; // Fetch all users that arent deleted
+                string query = "SELECT * FROM vUsersInfo"; // Fetch all users
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())

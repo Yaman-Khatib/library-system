@@ -183,6 +183,12 @@ namespace Library_Business
             return clsReadersData.GetAllReaders();
         }
 
+        public static DataTable GetAllReadersPaged(string filterColumn, string filterValue, int pageNumber, int pageSize, out int totalRecords)
+        {
+            // Get paged readers using the data access layer
+            return clsReadersData.GetAllReadersPaged(filterColumn, filterValue, pageNumber, pageSize, out totalRecords);
+        }
+
         public static bool IsReaderExists(int readerID)
         {
             // Check if the reader exists using the data access layer

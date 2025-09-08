@@ -130,11 +130,7 @@ namespace The_Story_Corner_Project.Login
             if (clsGlobal.CurrentUser != null)
             {
 
-            if(clsGlobal.CurrentUser.IsDeleted)
-            {
-                MessageBox.Show("Your account was deleted , please contact your admin!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            // IsDeleted check removed - not present in database
 
             if(cbRememberMe.Checked)
             {

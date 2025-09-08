@@ -60,6 +60,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.kryptonPalette1 = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnNext = new System.Windows.Forms.Button();
+            this.btnPrev = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctrLoading)).BeginInit();
@@ -366,6 +368,8 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnNext);
+            this.panel4.Controls.Add(this.btnPrev);
             this.panel4.Controls.Add(this.lblRecordsCount);
             this.panel4.Controls.Add(this.label6);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -445,6 +449,26 @@
             this.pictureBox1.TabIndex = 98;
             this.pictureBox1.TabStop = false;
             // 
+            // btnNext
+            // 
+            this.btnNext.Location = new System.Drawing.Point(929, 20);
+            this.btnNext.Name = "btnNext";
+            this.btnNext.Size = new System.Drawing.Size(125, 32);
+            this.btnNext.TabIndex = 102;
+            this.btnNext.Text = "Next page";
+            this.btnNext.UseVisualStyleBackColor = true;
+            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            // 
+            // btnPrev
+            // 
+            this.btnPrev.Location = new System.Drawing.Point(755, 20);
+            this.btnPrev.Name = "btnPrev";
+            this.btnPrev.Size = new System.Drawing.Size(125, 32);
+            this.btnPrev.TabIndex = 101;
+            this.btnPrev.Text = "Previous page";
+            this.btnPrev.UseVisualStyleBackColor = true;
+            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
+            // 
             // frmManageBorrows
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -505,5 +529,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem ReturnBookToolStripMenuItem;
         private System.Windows.Forms.Button btnAddBorrow;
+        private System.Windows.Forms.Button btnNext;
+        private System.Windows.Forms.Button btnPrev;
     }
 }

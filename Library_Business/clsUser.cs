@@ -18,7 +18,7 @@ namespace Library_Business
         public int? PersonID { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public bool IsDeleted { get; set; }
+        // IsDeleted property removed - not present in database
         public enPermissions? Permissions { get; set; }
         public clsPerson PersonInfo { get; set; }
 
@@ -31,18 +31,17 @@ namespace Library_Business
             Password = null;
             Permissions = null;
             PersonInfo = new clsPerson();
-            IsDeleted = false;
+            // IsDeleted property removed
             _Mode = enMode.AddNew;
         }
 
-        private clsUser(int? userID,int? personID, string userName, string password, enPermissions? permissions,bool isDeleted)
+        private clsUser(int? userID,int? personID, string userName, string password, enPermissions? permissions)
         {
             UserID = userID;
             PersonID = personID;
             UserName = userName;
             Password = password;
             Permissions = permissions;
-            IsDeleted = isDeleted;
             PersonInfo = clsPerson.Find(personID.Value);
             _Mode = enMode.Update;
         }
@@ -67,12 +66,11 @@ namespace Library_Business
             string password = null;
             int? personID = null;
             int? permissions = null;
-            bool isDeleted = false;
             // Find the user using the data access layer
-            bool isFound = clsUsersData.FindByUserID(userID, ref userName, ref password, ref personID, ref permissions,ref isDeleted);
+            bool isFound = clsUsersData.FindByUserID(userID, ref userName, ref password, ref personID, ref permissions);
             if (isFound)
             {
-                return new clsUser(userID, personID, userName, password, (enPermissions?)permissions, isDeleted);
+                return new clsUser(userID, personID, userName, password, (enPermissions?)permissions);
             }
 
             // If not found, return null
@@ -85,12 +83,11 @@ namespace Library_Business
             string userName = null;
             string password = null;
             int? permissions = null;
-            bool isDeleted = false;
             // Find the user by PersonID using the data access layer
-            bool isFound = clsUsersData.FindByPersonID(personID, ref userID, ref userName, ref password, ref permissions,ref isDeleted);
+            bool isFound = clsUsersData.FindByPersonID(personID, ref userID, ref userName, ref password, ref permissions);
             if (isFound)
             {
-                return new clsUser(userID, personID, userName, password, (enPermissions?)permissions, isDeleted);
+                return new clsUser(userID, personID, userName, password, (enPermissions?)permissions);
             }
 
             // If not found, return null
@@ -103,12 +100,11 @@ namespace Library_Business
             int? personID = null;
             string accountNumber = null;
             int? permissions = null;
-            bool IsDeleted = false;
             // Authenticate the user using the data access layer
-            bool isAuthenticated = clsUsersData.GetUserInfoByUserNameAndPassword(userName, password, ref userID, ref personID, ref accountNumber, ref permissions, ref IsDeleted);
+            bool isAuthenticated = clsUsersData.GetUserInfoByUserNameAndPassword(userName, password, ref userID, ref personID, ref accountNumber, ref permissions);
             if (isAuthenticated)
             {
-                return new clsUser(userID, personID, userName, password, (enPermissions?)permissions, IsDeleted);
+                return new clsUser(userID, personID, userName, password, (enPermissions?)permissions);
             }
 
             // If not authenticated, return null

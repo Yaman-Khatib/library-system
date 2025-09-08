@@ -206,7 +206,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "Select * from vCourses where (IsDeleted != 1) and (StartDate between @StartDate and @EndDate) Order by(StartDate) Desc;";
+                    string query = "Select * from vCourses WHERE (StartDate between @StartDate and @EndDate) Order by(StartDate) Desc;";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {

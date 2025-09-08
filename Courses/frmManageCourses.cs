@@ -39,11 +39,11 @@ namespace The_Story_Corner_Project.Courses
 
             //Reset date time pickers
 
-            dtpMinStartDate.MinDate = new DateTime(2023, 1, 1);
-            dtpMaxDate.MaxDate = DateTime.Now.AddYears(1);
+            dtpMinStartDate.MinDate = new DateTime(2020, 1, 1);
+            dtpMaxDate.MaxDate = DateTime.Now.AddYears(2);
 
-            dtpMaxDate.Value = DateTime.Now.AddMonths(3);
-            dtpMinStartDate.Value = DateTime.Now.AddYears(-1);
+            dtpMaxDate.Value = DateTime.Now.AddYears(1);
+            dtpMinStartDate.Value = DateTime.Now.AddYears(-2);
 
 
         }
@@ -91,7 +91,12 @@ namespace The_Story_Corner_Project.Courses
                 dgvCourses.Enabled = true;
             }
             lblRecordsCount.Text = dgvCourses.RowCount.ToString();
-            StyleColumns();
+            
+            // Only style columns if DataGridView has data and columns
+            if (dgvCourses != null && dgvCourses.Columns != null && dgvCourses.Columns.Count > 0)
+            {
+                StyleColumns();
+            }
         }
 
         private void cbFilterBy_SelectedIndexChanged(object sender, EventArgs e)
@@ -149,31 +154,81 @@ namespace The_Story_Corner_Project.Courses
 
         private void StyleColumns()
         {
-            dgvCourses.Columns["CourseID"].HeaderText = "course ID";
-            dgvCourses.Columns["CourseID"].Width = 120;
+            // Check if DataGridView and columns exist before styling
+            if (dgvCourses?.Columns == null) return;
 
+            // Style CourseID column
+            if (dgvCourses.Columns.Contains("CourseID"))
+            {
+                dgvCourses.Columns["CourseID"].HeaderText = "Course ID";
+                dgvCourses.Columns["CourseID"].Width = 80;
+            }
 
-            dgvCourses.Columns["CourseName"].HeaderText = "course name";
-            dgvCourses.Columns["CourseName"].Width = 150;
+            // Style CourseName column
+            if (dgvCourses.Columns.Contains("CourseName"))
+            {
+                dgvCourses.Columns["CourseName"].HeaderText = "Course Name";
+                dgvCourses.Columns["CourseName"].Width = 150;
+            }
 
-            dgvCourses.Columns["Description"].Width = 220;
+            // Style Description column
+            if (dgvCourses.Columns.Contains("Description"))
+            {
+                dgvCourses.Columns["Description"].HeaderText = "Description";
+                dgvCourses.Columns["Description"].Width = 200;
+            }
 
+            // Style Tutor column
+            if (dgvCourses.Columns.Contains("Tutor"))
+            {
+                dgvCourses.Columns["Tutor"].HeaderText = "Tutor";
+                dgvCourses.Columns["Tutor"].Width = 150;
+            }
 
-            dgvCourses.Columns["Tutor"].HeaderText = "Tutor";
-            dgvCourses.Columns["Tutor"].Width = 150;
+            // Style StartDate column
+            if (dgvCourses.Columns.Contains("StartDate"))
+            {
+                dgvCourses.Columns["StartDate"].HeaderText = "Start Date";
+                dgvCourses.Columns["StartDate"].Width = 120;
+                dgvCourses.Columns["StartDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
 
-            dgvCourses.Columns["StartDate"].HeaderText = "Start date";
-            dgvCourses.Columns["StartDate"].Width = 150;
+            // Style EndDate column
+            if (dgvCourses.Columns.Contains("EndDate"))
+            {
+                dgvCourses.Columns["EndDate"].HeaderText = "End Date";
+                dgvCourses.Columns["EndDate"].Width = 120;
+                dgvCourses.Columns["EndDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
 
+            // Style Enrollment Fees column
+            if (dgvCourses.Columns.Contains("Enrollment Fees"))
+            {
+                dgvCourses.Columns["Enrollment Fees"].HeaderText = "Enrollment Fees";
+                dgvCourses.Columns["Enrollment Fees"].Width = 120;
+                dgvCourses.Columns["Enrollment Fees"].DefaultCellStyle.Format = "C2"; // Currency format
+            }
 
-            dgvCourses.Columns["EndDate"].HeaderText = "End date";
-            dgvCourses.Columns["EndDate"].Width = 150;
+            // Style Enrolled Participants column
+            if (dgvCourses.Columns.Contains("Enrolled Participants"))
+            {
+                dgvCourses.Columns["Enrolled Participants"].HeaderText = "Enrolled";
+                dgvCourses.Columns["Enrolled Participants"].Width = 80;
+            }
 
+            // Style Max participants column
+            if (dgvCourses.Columns.Contains("Max participants"))
+            {
+                dgvCourses.Columns["Max participants"].HeaderText = "Max Participants";
+                dgvCourses.Columns["Max participants"].Width = 120;
+            }
 
-            dgvCourses.Columns["Enrollment Fees"].Width = 150;
-            dgvCourses.Columns["Max Participants"].Width = 150;
-
-
+            // Style Status column
+            if (dgvCourses.Columns.Contains("Status"))
+            {
+                dgvCourses.Columns["Status"].HeaderText = "Status";
+                dgvCourses.Columns["Status"].Width = 100;
+            }
         }
 
         private void txtFilterValue_TextChanged(object sender, EventArgs e)
@@ -181,15 +236,35 @@ namespace The_Story_Corner_Project.Courses
             String FilterColumn = "";
             switch (cbFilterBy.Text)
             {
-
-                case "course name":
+                case "Course ID":
+                    FilterColumn = "CourseID";
+                    break;
+                case "Course Name":
                     FilterColumn = "CourseName";
+                    break;
+                case "Description":
+                    FilterColumn = "Description";
+                    break;
+                case "Tutor":
+                    FilterColumn = "Tutor";
+                    break;
+                case "Start Date":
+                    FilterColumn = "StartDate";
+                    break;
+                case "End Date":
+                    FilterColumn = "EndDate";
+                    break;
+                case "Enrollment Fees":
+                    FilterColumn = "Enrollment Fees";
+                    break;
+                case "Enrolled Participants":
+                    FilterColumn = "Enrolled Participants";
+                    break;
+                case "Max Participants":
+                    FilterColumn = "Max participants";
                     break;
                 case "Status":
                     FilterColumn = "Status";
-                    break;
-                case "Tutor name":
-                    FilterColumn = "Tutor";
                     break;
                 default:
                     FilterColumn = "None";

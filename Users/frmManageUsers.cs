@@ -98,7 +98,7 @@ namespace The_Story_Corner_Project.Users
 
                 dgvUsers.Columns["Address"].Width = 240;
 
-                dgvUsers.Columns["IsDeleted"].Visible = false;
+                // IsDeleted column removed - not present in database
 
             }
 
