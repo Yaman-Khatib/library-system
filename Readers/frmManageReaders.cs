@@ -119,11 +119,11 @@ namespace The_Story_Corner_Project.Readers
 
         private void StyleColumns()
         {
+            // Hide ID and IsDeleted columns
             if (dgvReaders.Columns.Contains("ReaderID"))
-            {
-                dgvReaders.Columns["ReaderID"].HeaderText = "Reader ID";
-                dgvReaders.Columns["ReaderID"].Width = 110;
-            }
+                dgvReaders.Columns["ReaderID"].Visible = false;
+            if (dgvReaders.Columns.Contains("IsDeleted"))
+                dgvReaders.Columns["IsDeleted"].Visible = false;
 
             if (dgvReaders.Columns.Contains("AccountNumber"))
             {
@@ -157,6 +157,18 @@ namespace The_Story_Corner_Project.Readers
             {
                 dgvReaders.Columns["SubscriptionStatus"].HeaderText = "Subscription Status";
                 dgvReaders.Columns["SubscriptionStatus"].Width = 160;
+            }
+
+            // Make the last column responsive to fill remaining width
+            // Find the last visible column and make it fill the remaining space
+            var visibleColumns = dgvReaders.Columns.Cast<DataGridViewColumn>()
+                .Where(col => col.Visible)
+                .ToList();
+            
+            if (visibleColumns.Any())
+            {
+                var lastColumn = visibleColumns.Last();
+                lastColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
         }
 

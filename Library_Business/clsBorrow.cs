@@ -21,6 +21,7 @@ namespace Library_Business
         public int? ExtendedDays { get; set; }
         public enum enBorrowStatus
         {
+            All = 0,
             BorrowedOnTime = 1,
             BorrowedOverdue = 2,
             ReturnedOnTime = 3,
@@ -223,10 +224,28 @@ namespace Library_Business
             return null;
         }
 
-        // Method to delete a borrow by BorrowID
+        // Method to delete a borrow by BorrowID (soft delete)
         public static bool DeleteBorrow(int borrowID)
         {
             return clsBorrowsData.DeleteBorrowing(borrowID);
+        }
+
+        // Method to soft delete a borrow by BorrowID
+        public static bool SoftDeleteBorrow(int borrowID)
+        {
+            return clsBorrowsData.SoftDeleteBorrow(borrowID);
+        }
+
+        // Method to restore a deleted borrow
+        public static bool RestoreDeletedBorrow(int borrowID)
+        {
+            return clsBorrowsData.RestoreDeletedBorrow(borrowID);
+        }
+
+        // Method to check if a borrow is deleted
+        public static bool IsBorrowDeleted(int borrowID)
+        {
+            return clsBorrowsData.IsBorrowDeleted(borrowID);
         }
 
         // Method to return a book (set actual return date)
@@ -279,6 +298,11 @@ namespace Library_Business
         public static DataTable GetAllBorrowsPaged(enBorrowStatus statusIndex, DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
         {
             return clsBorrowsData.GetAllBorrowsPaged((int)statusIndex, startDate, endDate, pageNumber, pageSize, out totalRecords);
+        }
+
+        public static DataTable GetAllBorrowsPaged(enBorrowStatus statusIndex, DateTime startDate, DateTime endDate, string filterColumn, string filterValue, int pageNumber, int pageSize, out int totalRecords)
+        {
+            return clsBorrowsData.GetAllBorrowsPaged((int)statusIndex, startDate, endDate, filterColumn, filterValue, pageNumber, pageSize, out totalRecords);
         }
 
         public static bool ReturnBook(int borrowID, string Notes)

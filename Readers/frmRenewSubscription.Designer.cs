@@ -147,18 +147,23 @@
             this.label3.Location = new System.Drawing.Point(842, 20);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(31, 25);
+            this.label3.Size = new System.Drawing.Size(47, 25);
             this.label3.TabIndex = 182;
-            this.label3.Text = "%";
+            this.label3.Text = "S.P";
             // 
             // numericDiscount
             // 
             this.numericDiscount.Increment = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.numericDiscount.Location = new System.Drawing.Point(763, 19);
+            this.numericDiscount.Maximum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
             this.numericDiscount.Name = "numericDiscount";
             this.numericDiscount.Size = new System.Drawing.Size(73, 29);
             this.numericDiscount.StateCommon.Content.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

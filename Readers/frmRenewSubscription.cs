@@ -43,12 +43,14 @@ namespace The_Story_Corner_Project.Readers
             {
                 cbSubscriptionType.Items.Add(row["SubscriptionTypeName"].ToString());
             }
+            if(dt.Rows.Count > 0)
+                cbSubscriptionType.SelectedIndex = 0;
         }
 
         private double GetFees()
         {
             double SubscriptionFees = (double)clsSubscriptionType.Find(cbSubscriptionType.SelectedIndex + 1).SubscriptionTypeFees.Value;
-            return SubscriptionFees * (1 - (double)numericDiscount.Value / 100);
+            return SubscriptionFees  - (double)numericDiscount.Value;
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -89,6 +91,7 @@ namespace The_Story_Corner_Project.Readers
 
         private void kryptonNumericUpDown1_ValueChanged(object sender, EventArgs e)
         {
+         
             if (cbSubscriptionType.SelectedIndex >= 0)
                 lblFees.Text = GetFees().ToString("N0") + " S.P";
         }

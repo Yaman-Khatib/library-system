@@ -97,7 +97,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM books WHERE SerialNumber = @SerialNumber";
+                    string query = "SELECT * FROM books WHERE SerialNumber = @SerialNumber AND (IsDeleted IS NULL OR IsDeleted = 0)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -322,7 +322,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM books WHERE BookID = @BookID";
+                    string query = "SELECT * FROM books WHERE BookID = @BookID AND (IsDeleted IS NULL OR IsDeleted = 0)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -380,11 +380,11 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM books WHERE title = @title";
+                    string query = "SELECT * FROM books WHERE title = @title AND (IsDeleted IS NULL OR IsDeleted = 0)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@title", isbn);
+                        command.Parameters.AddWithValue("@title", title);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             if (reader.Read()) // If a matching record is found
@@ -492,7 +492,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM vBooks where Language = @Language;"; // Fetch all books
+                    string query = "SELECT * FROM vBooks where Language = @Language and IsDeleted = 0;"; // Fetch all books
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -529,7 +529,7 @@ namespace Library_DataAccess
                     connection.Open();
                     
                     // First, get the total count
-                    string countQuery = "SELECT COUNT(*) FROM vBooks WHERE Language = @Language";
+                    string countQuery = "SELECT COUNT(*) FROM vBooks WHERE Language = @Language and IsDeleted = 0";
                     using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
                     {
                         countCommand.Parameters.AddWithValue("@Language", Language);
@@ -539,7 +539,7 @@ namespace Library_DataAccess
                     // Then get the paged data using OFFSET and FETCH (SQL Server 2012+)
                     int offset = (pageNumber - 1) * pageSize;
                     string query = @"SELECT * FROM vBooks 
-                                   WHERE Language = @Language 
+                                   WHERE Language = @Language and IsDeleted = 0 or IsDeleted is null
                                    ORDER BY BookID 
                                    OFFSET @Offset ROWS 
                                    FETCH NEXT @PageSize ROWS ONLY";
@@ -569,6 +569,97 @@ namespace Library_DataAccess
             }
             return booksTable;
         }
+
+        public static DataTable GetAllBooksPaged(string Language, string filterColumn, string filterValue, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DataTable booksTable = new DataTable();
+            totalRecords = 0;
+            
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    
+                    // Build the WHERE clause based on filter
+                    string whereClause = "WHERE Language = @Language AND (IsDeleted IS NULL OR IsDeleted = 0)";
+                    if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                    {
+                        if (filterColumn == "BookID")
+                        {
+                            whereClause += " AND BookID = @FilterValue";
+                        }
+                        else
+                        {
+                            whereClause += $" AND {filterColumn} LIKE @FilterValue";
+                        }
+                    }
+
+                    // First, get the total count
+                    string countQuery = $"SELECT COUNT(*) FROM vBooks {whereClause}";
+                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    {
+                        countCommand.Parameters.AddWithValue("@Language", Language);
+                        if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                        {
+                            if (filterColumn == "BookID")
+                            {
+                                countCommand.Parameters.AddWithValue("@FilterValue", filterValue);
+                            }
+                            else
+                            {
+                                countCommand.Parameters.AddWithValue("@FilterValue", filterValue + "%");
+                            }
+                        }
+                        totalRecords = (int)countCommand.ExecuteScalar();
+                    }
+
+                    // Then get the paged data using OFFSET and FETCH (SQL Server 2012+)
+                    int offset = (pageNumber - 1) * pageSize;
+                    string query = $@"SELECT * FROM vBooks 
+                                   {whereClause}
+                                   ORDER BY BookID 
+                                   OFFSET @Offset ROWS 
+                                   FETCH NEXT @PageSize ROWS ONLY";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Language", Language);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
+                        
+                        if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                        {
+                            if (filterColumn == "BookID")
+                            {
+                                command.Parameters.AddWithValue("@FilterValue", filterValue);
+                            }
+                            else
+                            {
+                                command.Parameters.AddWithValue("@FilterValue", filterValue + "%");
+                            }
+                        }
+                        
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            booksTable.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            return booksTable;
+        }
+
         public static DataTable GetAllAuthors()
         {
             DataTable AuthorsTable = new DataTable();

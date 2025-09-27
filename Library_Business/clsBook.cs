@@ -92,6 +92,13 @@ namespace Library_Business
             return clsBooksData.GetAllBooksPaged(Language, pageNumber, pageSize, out totalRecords);
         }
 
+        // Method to get books with pagination and filtering
+        public static DataTable GetAllBooksPaged(string Language, string filterColumn, string filterValue, int pageNumber, int pageSize, out int totalRecords)
+        {
+            // Get paged books with filtering using the data access layer
+            return clsBooksData.GetAllBooksPaged(Language, filterColumn, filterValue, pageNumber, pageSize, out totalRecords);
+        }
+
         // Method to add a new book            
             private bool _AddNewBook()
             {
@@ -138,10 +145,17 @@ namespace Library_Business
 
 
 
-            // Method to delete a book by its ID
+            // Method to delete a book by its ID (soft delete)
             public static bool DeleteBook(int bookID)
             {
                 // Call the data access layer to delete the book
+                return clsBooksData.Delete(bookID);
+            }
+
+            // Method to soft delete a book by its ID
+            public static bool SoftDeleteBook(int bookID)
+            {
+                // Call the data access layer to soft delete the book
                 return clsBooksData.Delete(bookID);
             }
 

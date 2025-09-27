@@ -160,15 +160,6 @@ namespace The_Story_Corner_Project
             ShowFormInPanel(new frmManageBooks());
         }
 
-        private void readersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!clsGlobal.DoesCurrentUserHavePermission(clsUser.enPermissions.ReadersManagement))
-            {
-                MessageBox.Show("You don't have permissions to manage readers , contact your admin!", "No permissions", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
-            }
-            ShowFormInPanel(new frmManageReaders());
-        }
 
         private void toolStripMenuItemHome_Click(object sender, EventArgs e)
         {
@@ -611,10 +602,25 @@ namespace The_Story_Corner_Project
 
         }
 
+        private void manageReadersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!clsGlobal.DoesCurrentUserHavePermission(clsUser.enPermissions.ReadersManagement))
+            {
+                MessageBox.Show("You don't have permissions to manage readers , contact your admin!", "No permissions", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            ShowFormInPanel(new frmManageReaders());
+        }
 
-
-
-
+        private void subscriptionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!clsGlobal.DoesCurrentUserHavePermission(clsUser.enPermissions.ReadersManagement))
+            {
+                MessageBox.Show("You don't have permissions to manage subscriptions, contact your admin!", "No permissions", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            ShowFormInPanel(new frmManageSubscriptions());
+        }
     }
 }
     

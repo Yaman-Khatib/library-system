@@ -56,12 +56,13 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnNext = new System.Windows.Forms.Button();
+            this.btnPrev = new System.Windows.Forms.Button();
             this.lblRecordsCount = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.kryptonPalette1 = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnNext = new System.Windows.Forms.Button();
-            this.btnPrev = new System.Windows.Forms.Button();
+            this.dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctrLoading)).BeginInit();
@@ -166,6 +167,7 @@
             this.cbStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.cbStatus.FormattingEnabled = true;
             this.cbStatus.Items.AddRange(new object[] {
+            "All",
             "Borrowed - On Time",
             "Borrowed - Overdue",
             "Returned - On Time",
@@ -301,9 +303,10 @@
             this.toolStripSeparator2,
             this.ReturnBookToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.editToolStripMenuItem});
+            this.editToolStripMenuItem,
+            this.dToolStripMenuItem});
             this.cmsBorrows.Name = "contextMenuStrip1";
-            this.cmsBorrows.Size = new System.Drawing.Size(237, 206);
+            this.cmsBorrows.Size = new System.Drawing.Size(237, 272);
             this.cmsBorrows.Opening += new System.ComponentModel.CancelEventHandler(this.cmsBorrow_Opening);
             // 
             // toolStripMenuItemAddBorrow
@@ -378,6 +381,26 @@
             this.panel4.Size = new System.Drawing.Size(1872, 131);
             this.panel4.TabIndex = 102;
             // 
+            // btnNext
+            // 
+            this.btnNext.Location = new System.Drawing.Point(929, 20);
+            this.btnNext.Name = "btnNext";
+            this.btnNext.Size = new System.Drawing.Size(125, 32);
+            this.btnNext.TabIndex = 102;
+            this.btnNext.Text = "Next page";
+            this.btnNext.UseVisualStyleBackColor = true;
+            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            // 
+            // btnPrev
+            // 
+            this.btnPrev.Location = new System.Drawing.Point(755, 20);
+            this.btnPrev.Name = "btnPrev";
+            this.btnPrev.Size = new System.Drawing.Size(125, 32);
+            this.btnPrev.TabIndex = 101;
+            this.btnPrev.Text = "Previous page";
+            this.btnPrev.UseVisualStyleBackColor = true;
+            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
+            // 
             // lblRecordsCount
             // 
             this.lblRecordsCount.AutoSize = true;
@@ -449,25 +472,13 @@
             this.pictureBox1.TabIndex = 98;
             this.pictureBox1.TabStop = false;
             // 
-            // btnNext
+            // dToolStripMenuItem
             // 
-            this.btnNext.Location = new System.Drawing.Point(929, 20);
-            this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(125, 32);
-            this.btnNext.TabIndex = 102;
-            this.btnNext.Text = "Next page";
-            this.btnNext.UseVisualStyleBackColor = true;
-            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
-            // 
-            // btnPrev
-            // 
-            this.btnPrev.Location = new System.Drawing.Point(755, 20);
-            this.btnPrev.Name = "btnPrev";
-            this.btnPrev.Size = new System.Drawing.Size(125, 32);
-            this.btnPrev.TabIndex = 101;
-            this.btnPrev.Text = "Previous page";
-            this.btnPrev.UseVisualStyleBackColor = true;
-            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
+            this.dToolStripMenuItem.Image = global::The_Story_Corner_Project.Properties.Resources.Delete_32;
+            this.dToolStripMenuItem.Name = "dToolStripMenuItem";
+            this.dToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.dToolStripMenuItem.Text = "&Delete";
+            this.dToolStripMenuItem.Click += new System.EventHandler(this.btnDeleteSelectedBorrowRecord_Click);
             // 
             // frmManageBorrows
             // 
@@ -531,5 +542,6 @@
         private System.Windows.Forms.Button btnAddBorrow;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnPrev;
+        private System.Windows.Forms.ToolStripMenuItem dToolStripMenuItem;
     }
 }

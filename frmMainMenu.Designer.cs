@@ -37,6 +37,8 @@
             this.manageBooksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bookSalesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.readersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageReadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.subscriptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.courcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.paymentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.managePaymentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -180,6 +182,9 @@
             // 
             // readersToolStripMenuItem
             // 
+            this.readersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.manageReadersToolStripMenuItem,
+            this.subscriptionsToolStripMenuItem});
             this.readersToolStripMenuItem.Font = new System.Drawing.Font("Poppins", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.readersToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("readersToolStripMenuItem.Image")));
             this.readersToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
@@ -188,7 +193,24 @@
             this.readersToolStripMenuItem.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
             this.readersToolStripMenuItem.Size = new System.Drawing.Size(175, 83);
             this.readersToolStripMenuItem.Text = "Readers";
-            this.readersToolStripMenuItem.Click += new System.EventHandler(this.readersToolStripMenuItem_Click);
+            // 
+            // manageReadersToolStripMenuItem
+            // 
+            this.manageReadersToolStripMenuItem.Image = global::The_Story_Corner_Project.Properties.Resources.Man_32;
+            this.manageReadersToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.manageReadersToolStripMenuItem.Name = "manageReadersToolStripMenuItem";
+            this.manageReadersToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.manageReadersToolStripMenuItem.Text = "Manage readers";
+            this.manageReadersToolStripMenuItem.Click += new System.EventHandler(this.manageReadersToolStripMenuItem_Click);
+            // 
+            // subscriptionsToolStripMenuItem
+            // 
+            this.subscriptionsToolStripMenuItem.Image = global::The_Story_Corner_Project.Properties.Resources._4168571_renew_refresh_reload_repeat_sync_icon__1_;
+            this.subscriptionsToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.subscriptionsToolStripMenuItem.Name = "subscriptionsToolStripMenuItem";
+            this.subscriptionsToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.subscriptionsToolStripMenuItem.Text = "Subscriptions";
+            this.subscriptionsToolStripMenuItem.Click += new System.EventHandler(this.subscriptionsToolStripMenuItem_Click);
             // 
             // courcesToolStripMenuItem
             // 
@@ -473,5 +495,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem BackUpData;
         private System.Windows.Forms.ToolStripMenuItem RestoreData;
+        private System.Windows.Forms.ToolStripMenuItem manageReadersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem subscriptionsToolStripMenuItem;
     }
 }

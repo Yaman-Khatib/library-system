@@ -32,7 +32,7 @@ namespace The_Story_Corner_Project.Borrows
         }
         void _ResetDefaultValues()
         {
-            dtpEndDate.MaxDate = DateTime.Now.AddYears(1);
+            
             dtpEndDate.Value = DateTime.Now.AddYears(1);
             dtpStartDate.Value = DateTime.Now.AddYears(-1);
             cbStatus.SelectedIndex = 0;
@@ -58,12 +58,14 @@ namespace The_Story_Corner_Project.Borrows
             switch(cbStatus.SelectedIndex)
             {
                 case 0:
-                    return clsBorrow.enBorrowStatus.BorrowedOnTime;
+                    return clsBorrow.enBorrowStatus.All;
                 case 1:
+                    return clsBorrow.enBorrowStatus.BorrowedOnTime;
+                case 2:
                     return clsBorrow.enBorrowStatus.BorrowedOverdue;
-                    case 2:
+                    case 3:
                     return clsBorrow.enBorrowStatus.ReturnedOnTime;
-                case 3:
+                case 4:
                     return clsBorrow.enBorrowStatus.ReturnedOverdue;
                 default:
                     return clsBorrow.enBorrowStatus.Unknown;
@@ -73,7 +75,33 @@ namespace The_Story_Corner_Project.Borrows
         {
             // Simulate a delay to mimic a database call
             await Task.Delay(2);
-            return clsBorrow.GetAllBorrowsPaged(_currentStatus, _currentStartDate, _currentEndDate, pageNumber, pageSize, out _totalRecords);
+            
+            // Get filter values
+            string filterColumn = GetFilterColumn();
+            string filterValue = txtFilterValue.Text.Trim();
+            
+            return clsBorrow.GetAllBorrowsPaged(_currentStatus, _currentStartDate, _currentEndDate, filterColumn, filterValue, pageNumber, pageSize, out _totalRecords);
+        }
+
+        private string GetFilterColumn()
+        {
+            switch (cbFilterBy.Text)
+            {
+                case "Borrow ID":
+                    return "BorrowID";
+                case "Reader account number":
+                    return "AccountNumber";
+                case "Book title":
+                    return "Title";
+                case "Book language":
+                    return "LanguageName";
+                case "Full Name":
+                    return "FullName";
+                case "Serial Number":
+                    return "SerialNumber";
+                default:
+                    return "";
+            }
         }
 
         private async void LoadDataGridViewAsync()
@@ -136,11 +164,11 @@ namespace The_Story_Corner_Project.Borrows
             // Check if DataGridView and columns exist before styling
             if (dgvBorrows?.Columns == null) return;
 
+            // Hide ID and IsDeleted columns
             if (dgvBorrows.Columns.Contains("BorrowID"))
-            {
-                dgvBorrows.Columns["BorrowID"].HeaderText = "Borrow ID";
-                dgvBorrows.Columns["BorrowID"].Width = 120;
-            }
+                dgvBorrows.Columns["BorrowID"].Visible = false;
+            if (dgvBorrows.Columns.Contains("IsDeleted"))
+                dgvBorrows.Columns["IsDeleted"].Visible = false;
 
             if (dgvBorrows.Columns.Contains("FullName"))
             {
@@ -204,15 +232,35 @@ namespace The_Story_Corner_Project.Borrows
                 dgvBorrows.Columns["CreatedByUser"].Width = 130;
             }
 
+            // Make the last column responsive to fill remaining width
+            // Find the last visible column and make it fill the remaining space
+            var visibleColumns = dgvBorrows.Columns.Cast<DataGridViewColumn>()
+                .Where(col => col.Visible && col.Name != "StatusIndex")
+                .ToList();
+            
+            if (visibleColumns.Any())
+            {
+                var lastColumn = visibleColumns.Last();
+                lastColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+
+            //When showing "All" borrows, show both columns
+            if(cbStatus.SelectedIndex == 0) // All
+            {
+                dgvBorrows.Columns["ActualReturnDate"].Visible = true;
+                dgvBorrows.Columns["DueDate"].Visible = true;
+            }
             //When the borrow is not yet returned hide the Actual return date and show due date
-            if(cbStatus.SelectedIndex == 0 || cbStatus.SelectedIndex == 1)
+            else if(cbStatus.SelectedIndex == 1 || cbStatus.SelectedIndex == 2) // BorrowedOnTime or BorrowedOverdue
             {
                 dgvBorrows.Columns["ActualReturnDate"].Visible = false;
+                dgvBorrows.Columns["DueDate"].Visible = true;
             }
             //When the borrow is returned show actual return date and hide due date
-            else
+            else // ReturnedOnTime or ReturnedOverdue
             {
                 dgvBorrows.Columns["DueDate"].Visible = false;
+                dgvBorrows.Columns["ActualReturnDate"].Visible = true;
             }
 
 
@@ -225,39 +273,11 @@ namespace The_Story_Corner_Project.Borrows
         
 
         
-        private void txtFilterValue_TextChanged_1(object sender, EventArgs e)
+        private async void txtFilterValue_TextChanged_1(object sender, EventArgs e)
         {
-            
-            string filterColumn = cbFilterBy.Text.Trim();
-            string filterValue = txtFilterValue.Text.Trim();
-
-            if (filterColumn == "None" || filterValue == "")
-            {
-                _dtBorrows.DefaultView.RowFilter = "";
-
-            }
-
-            if (cbFilterBy.Text.Trim() == "Reader account number")
-                filterColumn = "AccountNumber";
-            if (cbFilterBy.Text.Trim() == "Book language")
-                filterColumn = "LanguageName";
-            if (cbFilterBy.Text.Trim() == "Book title")
-                filterColumn = "Title";
-
-            if (filterValue != "")
-                _dtBorrows.DefaultView.RowFilter = String.Format($" {filterColumn} like '{filterValue}%' ");
-
-
-            lblRecordsCount.Text = dgvBorrows.Rows.Count.ToString();
-
-            if (dgvBorrows.Rows.Count == 0)
-            {
-                pctrLoading.Visible = true;
-            }
-            else
-            {
-                pctrLoading.Visible = false;
-            }
+            // Reset to first page when filter changes
+            _currentPage = 1;
+            await LoadCurrentPageAsync();
         }
 
         private void cbFilterBy_SelectedIndexChanged(object sender, EventArgs e)
@@ -471,30 +491,36 @@ namespace The_Story_Corner_Project.Borrows
                 MessageBox.Show("Please choose the borrow record you want to return!");
             }
         }
+      
 
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        private void btnDeleteSelectedBorrowRecord_Click(object sender, EventArgs e)
         {
             if (clsGlobal.CurrentUser.Permissions != clsUser.enPermissions.FullAccess)
             {
-                MessageBox.Show("You are not allowed to delete a borrow , please contact your admin!","Not allowed to delete",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("You are not allowed to delete a borrow , please contact your admin!", "Not allowed to delete", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            if (MessageBox.Show("Are you sure you want to delete this borrow?", "Delete permanently", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-            {
-                return;
-            }
-
 
             if (dgvBorrows.SelectedRows.Count > 0)
             {
                 int BorrowID = Convert.ToInt16(dgvBorrows.SelectedRows[0].Cells["BorrowID"].Value);
-                frmShowBorrowInfo frm = new frmShowBorrowInfo(BorrowID);
-                frm.ShowDialog();
+
+                if (MessageBox.Show("Are you sure you want to delete this borrow record?\n\nThis will soft delete the borrow record.", "Delete Borrow Record", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                {
+                    if (clsBorrow.DeleteBorrow(BorrowID))
+                    {
+                        MessageBox.Show("Borrow record deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadDataGridViewAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("An error occurred while deleting the borrow record.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
             else
             {
-                MessageBox.Show("Please choose a borrow record");
+                MessageBox.Show("Please choose a borrow record to delete.");
             }
         }
 

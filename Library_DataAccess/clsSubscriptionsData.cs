@@ -206,6 +206,70 @@ namespace Library_DataAccess
             }
             return isDeleted;
         }
+
+        public static bool SoftDeleteSubscription(int subscriptionID)
+        {
+            bool isDeleted = false;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    string query = "UPDATE Subscriptions SET IsDeleted = 1 WHERE SubscriptionID = @SubscriptionID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@SubscriptionID", subscriptionID);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        isDeleted = rowsAffected > 0;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+            }
+            return isDeleted;
+        }
+
+        public static bool IsSubscriptionExpired(int subscriptionID)
+        {
+            bool isExpired = false;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT ExpirationDate FROM Subscriptions WHERE SubscriptionID = @SubscriptionID AND (IsDeleted IS NULL OR IsDeleted = 0)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@SubscriptionID", subscriptionID);
+
+                        object result = command.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            DateTime expirationDate = (DateTime)result;
+                            isExpired = expirationDate < DateTime.Now;
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+            }
+            return isExpired;
+        }
         
         
         public static DataTable GetAllSubscriptions()
@@ -238,6 +302,79 @@ namespace Library_DataAccess
             return subscriptionsTable;
         }
 
+        public static DataTable GetAllSubscriptionsPaged(DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DataTable subscriptionsTable = new DataTable();
+            totalRecords = 0;
+            
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    
+                    connection.Open();
+                    
+                    // First, get the total count
+                    string countQuery = @"SELECT COUNT(*) FROM Subscriptions s 
+                                        INNER JOIN Readers r ON s.ReaderID = r.ReaderID 
+                                        INNER JOIN People ppl ON r.PersonID = ppl.PersonID
+                                        INNER JOIN Users u ON s.CreatedByUserID = u.UserID 
+                                        INNER JOIN SubscriptionTypes st ON s.SubscriptionTypeID = st.SubscriptionTypeID 
+                                        INNER JOIN Payments p ON s.PaymentID = p.PaymentID
+                                        WHERE s.StartDate >= @StartDate AND s.StartDate <= @EndDate AND (s.IsDeleted IS NULL OR s.IsDeleted = 0)";
+                    
+                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    {
+                        countCommand.Parameters.AddWithValue("@StartDate", startDate);
+                        countCommand.Parameters.AddWithValue("@EndDate", endDate);
+                        totalRecords = (int)countCommand.ExecuteScalar();
+                    }
+
+                    // Then get the paged data using OFFSET and FETCH
+                    int offset = (pageNumber - 1) * pageSize;
+                    string query = @"SELECT s.SubscriptionID, ppl.FirstName + ' ' + ppl.LastName as FullName, r.AccountNumber,
+                                           SubscriptionTime = FORMAT(s.StartDate, 'hh:mm tt'),
+                                           SubscriptionDate = FORMAT(s.StartDate, 'yyyy-MM-dd'),
+                                           ExpirationDate = FORMAT(s.ExpirationDate, 'yyyy-MM-dd'),
+                                           st.SubscriptionTypeName, p.PaymentAmount,
+                                           Discount = CONCAT(s.Discount, ' S.P'),
+                                           u.UserName as CreatedByUser
+                                    FROM Subscriptions s 
+                                    INNER JOIN Readers r ON s.ReaderID = r.ReaderID 
+                                    INNER JOIN People ppl ON r.PersonID = ppl.PersonID
+                                    INNER JOIN Users u ON s.CreatedByUserID = u.UserID 
+                                    INNER JOIN SubscriptionTypes st ON s.SubscriptionTypeID = st.SubscriptionTypeID 
+                                    INNER JOIN Payments p ON s.PaymentID = p.PaymentID
+                                    WHERE s.StartDate >= @StartDate AND s.StartDate <= @EndDate AND (s.IsDeleted IS NULL OR s.IsDeleted = 0)
+                                    ORDER BY s.StartDate DESC 
+                                    OFFSET @Offset ROWS 
+                                    FETCH NEXT @PageSize ROWS ONLY";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@StartDate", startDate);
+                        command.Parameters.AddWithValue("@EndDate", endDate);
+                        command.Parameters.AddWithValue("@Offset", offset);
+                        command.Parameters.AddWithValue("@PageSize", pageSize);
+                        
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            subscriptionsTable.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+            }
+            return subscriptionsTable;
+        }
+
         public static DataTable GetSubscriptionsForReader(int readerID)
         {
             DataTable subscriptionsTable = new DataTable();
@@ -247,7 +384,7 @@ namespace Library_DataAccess
                 {
                     connection.Open();
                     string query = "\r\n\r\nSelect S.SubscriptionID,SubscriptionTime = Format(S.StartDate ,'hh:mm tt'),SubscriptionDate = Format(S.StartDate ,'yyyy-MM-dd')," +
-                        "ExpirationDate =  FORMAT(S.ExpirationDate, 'yyyy-MM-dd'),St.SubscriptionTypeName,p.PaymentAmount,Concat(s.Discount,'%') as Discount ,u.UserName as CreatedByUser\r\nfrom \r\n" +
+                        "ExpirationDate =  FORMAT(S.ExpirationDate, 'yyyy-MM-dd'),St.SubscriptionTypeName,p.PaymentAmount,Concat(s.Discount,'S.P') as Discount ,u.UserName as CreatedByUser\r\nfrom \r\n" +
                         "Subscriptions s inner join Users u on s.CreatedByUserID = u.UserID  inner join SubscriptionTypes st on st.SubscriptionTypeID = s.SubscriptionTypeID inner join Payments p on p.PaymentID = s.PaymentID" +
                         " where s.ReaderID = @ReaderID;";
 

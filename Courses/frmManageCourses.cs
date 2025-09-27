@@ -157,12 +157,11 @@ namespace The_Story_Corner_Project.Courses
             // Check if DataGridView and columns exist before styling
             if (dgvCourses?.Columns == null) return;
 
-            // Style CourseID column
+            // Hide ID and IsDeleted columns
             if (dgvCourses.Columns.Contains("CourseID"))
-            {
-                dgvCourses.Columns["CourseID"].HeaderText = "Course ID";
-                dgvCourses.Columns["CourseID"].Width = 80;
-            }
+                dgvCourses.Columns["CourseID"].Visible = false;
+            if (dgvCourses.Columns.Contains("IsDeleted"))
+                dgvCourses.Columns["IsDeleted"].Visible = false;
 
             // Style CourseName column
             if (dgvCourses.Columns.Contains("CourseName"))
@@ -223,11 +222,11 @@ namespace The_Story_Corner_Project.Courses
                 dgvCourses.Columns["Max participants"].Width = 120;
             }
 
-            // Style Status column
+            // Style Status column (make it responsive - last column)
             if (dgvCourses.Columns.Contains("Status"))
             {
                 dgvCourses.Columns["Status"].HeaderText = "Status";
-                dgvCourses.Columns["Status"].Width = 100;
+                dgvCourses.Columns["Status"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
         }
 

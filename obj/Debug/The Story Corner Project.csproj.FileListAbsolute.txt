@@ -69,3 +69,4 @@ C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.C
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmBookSales.resources
 C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Books.frmSaleBook.resources
 C:\learning_coding\The Story Corner Project\obj\Debug\The Stor.C14ADB1B.Up2Date
+C:\learning_coding\The Story Corner Project\obj\Debug\The_Story_Corner_Project.Readers.frmManageSubscriptions.resources

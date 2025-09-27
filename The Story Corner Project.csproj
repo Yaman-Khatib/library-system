@@ -243,6 +243,12 @@
     <Compile Include="Readers\Controls\ctrReaderBasicInfo.Designer.cs">
       <DependentUpon>ctrReaderBasicInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Readers\frmManageSubscriptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Readers\frmManageSubscriptions.Designer.cs">
+      <DependentUpon>frmManageSubscriptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Readers\frmRenewSubscription.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -396,6 +402,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Readers\Controls\ctrReaderBasicInfo.resx">
       <DependentUpon>ctrReaderBasicInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Readers\frmManageSubscriptions.resx">
+      <DependentUpon>frmManageSubscriptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Readers\frmRenewSubscription.resx">
       <DependentUpon>frmRenewSubscription.cs</DependentUpon>

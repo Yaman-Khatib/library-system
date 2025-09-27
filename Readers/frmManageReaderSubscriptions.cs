@@ -102,8 +102,9 @@ namespace The_Story_Corner_Project.Readers
         }
         private void StyleColumns()
         {
-            dgvPayments.Columns["SubscriptionID"].HeaderText = "Subscription ID";
-            dgvPayments.Columns["SubscriptionID"].Width = 120;
+            // Hide SubscriptionID column but keep it for delete operations
+            if (dgvPayments.Columns.Contains("SubscriptionID"))
+                dgvPayments.Columns["SubscriptionID"].Visible = false;
 
             //dgvEnrollments.Columns["ReaderID"].HeaderText = "Reader ID";
             //dgvEnrollments.Columns["ReaderID"].Width = 140;
@@ -165,6 +166,102 @@ namespace The_Story_Corner_Project.Readers
             frm.ShowDialog();
 
             LoadDataGridViewAsync();
+        }
+
+        private void dgvPayments_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right) // Check for right-click and valid row
+            {
+                // Select the entire row on right-click
+                dgvPayments.ClearSelection(); // Clear any previous selections
+                dgvPayments.Rows[e.RowIndex].Selected = true; // Select the row
+            }
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            // Check if a row is selected
+            if (dgvPayments.SelectedRows.Count == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            // Get the selected subscription ID
+            int subscriptionID = GetSelectedSubscriptionID();
+            if (subscriptionID == -1)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            // Check if subscription is expired
+            bool isExpired = clsSubscription.IsSubscriptionExpired(subscriptionID);
+            
+            // Enable/disable delete option based on expiration status
+            deleteToolStripMenuItem.Enabled = !isExpired;
+            
+            if (isExpired)
+            {
+                deleteToolStripMenuItem.Text = "Cannot Delete (Expired)";
+            }
+            else
+            {
+                deleteToolStripMenuItem.Text = "Delete Subscription";
+            }
+        }
+
+        private int GetSelectedSubscriptionID()
+        {
+            if (dgvPayments.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvPayments.SelectedRows[0];
+                if (selectedRow.Cells["SubscriptionID"].Value != null)
+                {
+                    return Convert.ToInt32(selectedRow.Cells["SubscriptionID"].Value);
+                }
+            }
+            return -1;
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int subscriptionID = GetSelectedSubscriptionID();
+            if (subscriptionID == -1)
+            {
+                MessageBox.Show("Please select a subscription to delete.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Check if subscription is expired
+            if (clsSubscription.IsSubscriptionExpired(subscriptionID))
+            {
+                MessageBox.Show("Cannot delete an expired subscription.", "Cannot Delete", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirm deletion
+            if (MessageBox.Show("Are you sure you want to delete this subscription?\n\nThis will soft delete the subscription record.", 
+                               "Delete Subscription", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                if (clsSubscription.SoftDeleteSubscription(subscriptionID))
+                {
+                    MessageBox.Show("Subscription deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadDataGridViewAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Failed to delete subscription. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void dgvPayments_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0) // Ensure that the click is on a valid row
+            {
+                dgvPayments.Rows[e.RowIndex].Selected = true; // Select the clicked row
+            }
         }
     }
 }

@@ -179,7 +179,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "DELETE FROM Borrows WHERE BorrowID = @BorrowID";
+                    string query = "UPDATE Borrows SET IsDeleted = 1 WHERE BorrowID = @BorrowID";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -202,6 +202,89 @@ namespace Library_DataAccess
             return isDeleted;
         }
 
+        public static bool SoftDeleteBorrow(int? borrowID)
+        {
+            bool isDeleted = false;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    string query = "UPDATE Borrows SET IsDeleted = 1 WHERE BorrowID = @BorrowID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@BorrowID", borrowID);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        isDeleted = rowsAffected > 0;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            return isDeleted;
+        }
+
+        public static bool RestoreDeletedBorrow(int? borrowID)
+        {
+            bool isRestored = false;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    string query = "UPDATE Borrows SET IsDeleted = 0 WHERE BorrowID = @BorrowID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@BorrowID", borrowID);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        isRestored = rowsAffected > 0;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Handle SQL exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle general exception (logging, rethrowing, etc.)
+                clsLogEvent.Log(ex);
+            }
+            return isRestored;
+        }
+
+        public static bool IsBorrowDeleted(int? borrowID)
+        {
+            bool IsDeleted = false;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(1) FROM Borrows WHERE BorrowID = @BorrowID and IsDeleted = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@BorrowID", borrowID);
+                        int count = (int)command.ExecuteScalar();
+                        IsDeleted = count > 0;
+                    }
+                }
+            }
+            catch (SqlException ex) { }
+            return IsDeleted;
+        }
+
 
         public static DataTable GetAllBorrowsForReader(int? readerID)
         {
@@ -211,7 +294,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM Borrows WHERE ReaderID = @ReaderID";
+                    string query = "SELECT * FROM Borrows WHERE ReaderID = @ReaderID AND (IsDeleted IS NULL OR IsDeleted = 0)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -246,11 +329,22 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM vBorrows where statusIndex = @statusIndex and BorrowDate >= @startDate and BorrowDate <= @endDate; ";
+                    string query;
+                    if (statusIndex == 0) // All statuses
+                    {
+                        query = "SELECT * FROM vBorrows WHERE BorrowDate >= @startDate AND BorrowDate <= @endDate AND (IsDeleted IS NULL OR IsDeleted = 0)";
+                    }
+                    else
+                    {
+                        query = "SELECT * FROM vBorrows WHERE statusIndex = @statusIndex AND BorrowDate >= @startDate AND BorrowDate <= @endDate AND (IsDeleted IS NULL OR IsDeleted = 0)";
+                    }
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        if (statusIndex != 0) // Only add statusIndex parameter if not "All"
+                        {
+                            command.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        }
                         command.Parameters.AddWithValue("@startDate", startDate);
                         command.Parameters.AddWithValue("@endDate", endDate);
 
@@ -276,6 +370,11 @@ namespace Library_DataAccess
 
         public static DataTable GetAllBorrowsPaged(int statusIndex, DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
         {
+            return GetAllBorrowsPaged(statusIndex, startDate, endDate, "", "", pageNumber, pageSize, out totalRecords);
+        }
+
+        public static DataTable GetAllBorrowsPaged(int statusIndex, DateTime startDate, DateTime endDate, string filterColumn, string filterValue, int pageNumber, int pageSize, out int totalRecords)
+        {
             DataTable borrowsTable = new DataTable();
             totalRecords = 0;
             
@@ -285,31 +384,82 @@ namespace Library_DataAccess
                 {
                     connection.Open();
                     
+                    // Build the WHERE clause based on filter
+                    string whereClause;
+                    if (statusIndex == 0) // All statuses
+                    {
+                        whereClause = "WHERE BorrowDate >= @startDate AND BorrowDate <= @endDate AND (IsDeleted IS NULL OR IsDeleted = 0)";
+                    }
+                    else
+                    {
+                        whereClause = "WHERE statusIndex = @statusIndex AND BorrowDate >= @startDate AND BorrowDate <= @endDate AND (IsDeleted IS NULL OR IsDeleted = 0)";
+                    }
+                    if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                    {
+                        if (filterColumn == "BorrowID")
+                        {
+                            whereClause += " AND BorrowID = @FilterValue";
+                        }
+                        else
+                        {
+                            whereClause += $" AND {filterColumn} LIKE @FilterValue";
+                        }
+                    }
+
                     // First, get the total count
-                    string countQuery = "SELECT COUNT(*) FROM vBorrows WHERE statusIndex = @statusIndex AND BorrowDate >= @startDate AND BorrowDate <= @endDate";
+                    string countQuery = $"SELECT COUNT(*) FROM vBorrows {whereClause}";
                     using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
                     {
-                        countCommand.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        if (statusIndex != 0) // Only add statusIndex parameter if not "All"
+                        {
+                            countCommand.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        }
                         countCommand.Parameters.AddWithValue("@startDate", startDate);
                         countCommand.Parameters.AddWithValue("@endDate", endDate);
+                        if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                        {
+                            if (filterColumn == "BorrowID")
+                            {
+                                countCommand.Parameters.AddWithValue("@FilterValue", filterValue);
+                            }
+                            else
+                            {
+                                countCommand.Parameters.AddWithValue("@FilterValue", filterValue + "%");
+                            }
+                        }
                         totalRecords = (int)countCommand.ExecuteScalar();
                     }
 
                     // Then get the paged data using OFFSET and FETCH
                     int offset = (pageNumber - 1) * pageSize;
-                    string query = @"SELECT * FROM vBorrows 
-                                   WHERE statusIndex = @statusIndex AND BorrowDate >= @startDate AND BorrowDate <= @endDate
+                    string query = $@"SELECT * FROM vBorrows 
+                                   {whereClause}
                                    ORDER BY BorrowDate DESC 
                                    OFFSET @Offset ROWS 
                                    FETCH NEXT @PageSize ROWS ONLY";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        if (statusIndex != 0) // Only add statusIndex parameter if not "All"
+                        {
+                            command.Parameters.AddWithValue("@statusIndex", statusIndex);
+                        }
                         command.Parameters.AddWithValue("@startDate", startDate);
                         command.Parameters.AddWithValue("@endDate", endDate);
                         command.Parameters.AddWithValue("@Offset", offset);
                         command.Parameters.AddWithValue("@PageSize", pageSize);
+                        
+                        if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+                        {
+                            if (filterColumn == "BorrowID")
+                            {
+                                command.Parameters.AddWithValue("@FilterValue", filterValue);
+                            }
+                            else
+                            {
+                                command.Parameters.AddWithValue("@FilterValue", filterValue + "%");
+                            }
+                        }
                         
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -336,7 +486,7 @@ namespace Library_DataAccess
             using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
             {
                 connection.Open();
-                string query = "select count(borrowID) from borrows\r\nwhere ActualReturnDate is null and BookID = @bookID";
+                string query = "select count(borrowID) from borrows\r\nwhere ActualReturnDate is null and BookID = @bookID AND (IsDeleted IS NULL OR IsDeleted = 0)";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@bookID", bookID);
@@ -355,7 +505,7 @@ namespace Library_DataAccess
                 using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM Borrows WHERE BorrowID = @BorrowID";
+                    string query = "SELECT * FROM Borrows WHERE BorrowID = @BorrowID AND (IsDeleted IS NULL OR IsDeleted = 0)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {

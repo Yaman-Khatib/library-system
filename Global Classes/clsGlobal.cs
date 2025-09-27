@@ -104,6 +104,7 @@ namespace The_Story_Corner_Project.Global_Classes
         }
 
         public static bool DoesCurrentUserHavePermission(clsUser.enPermissions permissions)
+        
         {
             return ((CurrentUser.Permissions & permissions) == permissions);
         }

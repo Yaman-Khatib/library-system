@@ -51,7 +51,35 @@ namespace The_Story_Corner_Project
         {
             // Simulate a delay to mimic a database call
             await Task.Delay(2);
-            return clsBook.GetAllBooksPaged(Language, pageNumber, pageSize, out _totalRecords);
+            
+            // Get filter values
+            string filterColumn = GetFilterColumn();
+            string filterValue = txtFilterValue.Text.Trim();
+            
+            return clsBook.GetAllBooksPaged(Language, filterColumn, filterValue, pageNumber, pageSize, out _totalRecords);
+        }
+
+        private string GetFilterColumn()
+        {
+            switch (cbFilterBy.Text)
+            {
+                case "Book ID":
+                    return "BookID";
+                case "Title":
+                    return "Title";
+                case "Author":
+                    return "Author";
+                case "ISBN":
+                    return "ISBN";
+                case "Book Number":
+                    return "SerialNumber";
+                case "Genre":
+                    return "Genre";
+                case "Language":
+                    return "Language";
+                default:
+                    return "";
+            }
         }
 
         private async void LoadDataGridViewAsync()
@@ -139,7 +167,12 @@ namespace The_Story_Corner_Project
             if (dgvBooks.Rows.Count == 0)
                 return;
 
-            dgvBooks.Columns["BookID"].HeaderText = "Book ID";            
+            // Hide ID and IsDeleted columns
+            if (dgvBooks.Columns.Contains("BookID"))
+                dgvBooks.Columns["BookID"].Visible = false;
+            if (dgvBooks.Columns.Contains("IsDeleted"))
+                dgvBooks.Columns["IsDeleted"].Visible = false;
+
             dgvBooks.Columns["Title"].Width = 190;            
             dgvBooks.Columns["Author"].Width = 180;            
             dgvBooks.Columns["ISBN"].Width = 120;
@@ -149,9 +182,12 @@ namespace The_Story_Corner_Project
             dgvBooks.Columns["Language"].Width = 130;
             dgvBooks.Columns["Description"].Width = 160;
             dgvBooks.Columns["CopiesCount"].HeaderText = "Copies count";
-            //dgvBooks.Columns["IsDeleted"].Visible = false;
-
-
+            
+            // Make the last column (CopiesCount) responsive to fill remaining width
+            if (dgvBooks.Columns.Contains("CopiesCount"))
+            {
+                dgvBooks.Columns["CopiesCount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
         }
 
         private void btnAddBook_Click(object sender, EventArgs e)
@@ -177,8 +213,7 @@ namespace The_Story_Corner_Project
 
         private async void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
-            // For now, we'll implement a simple approach where filtering resets to page 1
-            // In a more advanced implementation, you could add filter parameters to the SQL query
+            // Reset to first page when filter changes
             _currentPage = 1;
             await LoadCurrentPageAsync();
         }

@@ -131,6 +131,21 @@ namespace Library_Business
         {
             return clsSubscriptionsData.GetAllSubscriptions();
         }
+
+        public static DataTable GetAllSubscriptionsPaged(DateTime startDate, DateTime endDate, int pageNumber, int pageSize, out int totalRecords)
+        {
+            return clsSubscriptionsData.GetAllSubscriptionsPaged(startDate, endDate, pageNumber, pageSize, out totalRecords);
+        }
+
+        public static bool SoftDeleteSubscription(int subscriptionID)
+        {
+            return clsSubscriptionsData.SoftDeleteSubscription(subscriptionID);
+        }
+
+        public static bool IsSubscriptionExpired(int subscriptionID)
+        {
+            return clsSubscriptionsData.IsSubscriptionExpired(subscriptionID);
+        }
         public static clsSubscription Find(int SubscriptionID)
         {
             int? subscriptionID = null;
