@@ -58,7 +58,7 @@ namespace Library_Business
         {
             clsSubscriptionType SubscriptionType = clsSubscriptionType.Find((int)this.SubscriptionTypeID);
             clsPayment Payment = new clsPayment();
-            Payment.PaymentAmount = SubscriptionType.SubscriptionTypeFees - SubscriptionType.SubscriptionTypeFees*((double)this.Discount/100);
+            Payment.PaymentAmount = SubscriptionType.SubscriptionTypeFees - (double)this.Discount;
             Payment.PaymentDate = DateTime.Now;
             Payment.ReaderID = ReaderID;
             Payment.CreatedByUserID = CreatedByUserID;

@@ -37,6 +37,10 @@
             this.label13 = new System.Windows.Forms.Label();
             this.tabControlUser = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.pnlSubscriptionDate = new System.Windows.Forms.Panel();
+            this.pictureBox11 = new System.Windows.Forms.PictureBox();
+            this.dtpSubscriptionDate = new System.Windows.Forms.DateTimePicker();
+            this.label26 = new System.Windows.Forms.Label();
             this.pnlSubscriptionType = new System.Windows.Forms.GroupBox();
             this.label15 = new System.Windows.Forms.Label();
             this.numericDiscount = new ComponentFactory.Krypton.Toolkit.KryptonNumericUpDown();
@@ -117,12 +121,10 @@
             this.label28 = new System.Windows.Forms.Label();
             this.pnlFees = new System.Windows.Forms.Panel();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.pnlSubscriptionDate = new System.Windows.Forms.Panel();
-            this.pictureBox11 = new System.Windows.Forms.PictureBox();
-            this.dtpSubscriptionDate = new System.Windows.Forms.DateTimePicker();
-            this.label26 = new System.Windows.Forms.Label();
             this.tabControlUser.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.pnlSubscriptionDate.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).BeginInit();
             this.pnlSubscriptionType.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -146,8 +148,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).BeginInit();
             this.pnlFees.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            this.pnlSubscriptionDate.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).BeginInit();
             this.SuspendLayout();
             // 
             // kryptonPalette1
@@ -283,6 +283,49 @@
             this.tabPage1.Text = "Personal Info";
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
+            // pnlSubscriptionDate
+            // 
+            this.pnlSubscriptionDate.Controls.Add(this.pictureBox11);
+            this.pnlSubscriptionDate.Controls.Add(this.dtpSubscriptionDate);
+            this.pnlSubscriptionDate.Controls.Add(this.label26);
+            this.pnlSubscriptionDate.Location = new System.Drawing.Point(8, 302);
+            this.pnlSubscriptionDate.Name = "pnlSubscriptionDate";
+            this.pnlSubscriptionDate.Size = new System.Drawing.Size(482, 40);
+            this.pnlSubscriptionDate.TabIndex = 211;
+            // 
+            // pictureBox11
+            // 
+            this.pictureBox11.Image = global::The_Story_Corner_Project.Properties.Resources.Calendar_32;
+            this.pictureBox11.Location = new System.Drawing.Point(208, 7);
+            this.pictureBox11.Name = "pictureBox11";
+            this.pictureBox11.Size = new System.Drawing.Size(31, 26);
+            this.pictureBox11.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox11.TabIndex = 213;
+            this.pictureBox11.TabStop = false;
+            // 
+            // dtpSubscriptionDate
+            // 
+            this.dtpSubscriptionDate.CustomFormat = "dd/M/yyyy";
+            this.dtpSubscriptionDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.dtpSubscriptionDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpSubscriptionDate.Location = new System.Drawing.Point(248, 5);
+            this.dtpSubscriptionDate.MinDate = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            this.dtpSubscriptionDate.Name = "dtpSubscriptionDate";
+            this.dtpSubscriptionDate.Size = new System.Drawing.Size(205, 26);
+            this.dtpSubscriptionDate.TabIndex = 211;
+            this.dtpSubscriptionDate.Value = new System.DateTime(2000, 12, 31, 0, 0, 0, 0);
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Poppins", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label26.Location = new System.Drawing.Point(3, 3);
+            this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(204, 36);
+            this.label26.TabIndex = 212;
+            this.label26.Text = "Subscription date:";
+            // 
             // pnlSubscriptionType
             // 
             this.pnlSubscriptionType.Controls.Add(this.label15);
@@ -295,17 +338,18 @@
             this.pnlSubscriptionType.Size = new System.Drawing.Size(768, 64);
             this.pnlSubscriptionType.TabIndex = 204;
             this.pnlSubscriptionType.TabStop = false;
+            this.pnlSubscriptionType.Enter += new System.EventHandler(this.pnlSubscriptionType_Enter);
             // 
             // label15
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(726, 21);
+            this.label15.Location = new System.Drawing.Point(722, 20);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(31, 25);
+            this.label15.Size = new System.Drawing.Size(47, 25);
             this.label15.TabIndex = 182;
-            this.label15.Text = "%";
+            this.label15.Text = "S.P";
             // 
             // numericDiscount
             // 
@@ -315,6 +359,11 @@
             0,
             0});
             this.numericDiscount.Location = new System.Drawing.Point(646, 19);
+            this.numericDiscount.Maximum = new decimal(new int[] {
+            1316134911,
+            2328,
+            0,
+            0});
             this.numericDiscount.Name = "numericDiscount";
             this.numericDiscount.Size = new System.Drawing.Size(73, 29);
             this.numericDiscount.StateCommon.Content.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1338,49 +1387,6 @@
             this.pictureBox6.TabIndex = 191;
             this.pictureBox6.TabStop = false;
             // 
-            // pnlSubscriptionDate
-            // 
-            this.pnlSubscriptionDate.Controls.Add(this.pictureBox11);
-            this.pnlSubscriptionDate.Controls.Add(this.dtpSubscriptionDate);
-            this.pnlSubscriptionDate.Controls.Add(this.label26);
-            this.pnlSubscriptionDate.Location = new System.Drawing.Point(8, 302);
-            this.pnlSubscriptionDate.Name = "pnlSubscriptionDate";
-            this.pnlSubscriptionDate.Size = new System.Drawing.Size(482, 40);
-            this.pnlSubscriptionDate.TabIndex = 211;
-            // 
-            // pictureBox11
-            // 
-            this.pictureBox11.Image = global::The_Story_Corner_Project.Properties.Resources.Calendar_32;
-            this.pictureBox11.Location = new System.Drawing.Point(208, 7);
-            this.pictureBox11.Name = "pictureBox11";
-            this.pictureBox11.Size = new System.Drawing.Size(31, 26);
-            this.pictureBox11.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox11.TabIndex = 213;
-            this.pictureBox11.TabStop = false;
-            // 
-            // dtpSubscriptionDate
-            // 
-            this.dtpSubscriptionDate.CustomFormat = "dd/M/yyyy";
-            this.dtpSubscriptionDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.dtpSubscriptionDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpSubscriptionDate.Location = new System.Drawing.Point(248, 5);
-            this.dtpSubscriptionDate.MinDate = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
-            this.dtpSubscriptionDate.Name = "dtpSubscriptionDate";
-            this.dtpSubscriptionDate.Size = new System.Drawing.Size(205, 26);
-            this.dtpSubscriptionDate.TabIndex = 211;
-            this.dtpSubscriptionDate.Value = new System.DateTime(2000, 12, 31, 0, 0, 0, 0);
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Poppins", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(3, 3);
-            this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(204, 36);
-            this.label26.TabIndex = 212;
-            this.label26.Text = "Subscription date:";
-            // 
             // frmAddUpdateReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1412,6 +1418,9 @@
             this.tabControlUser.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.pnlSubscriptionDate.ResumeLayout(false);
+            this.pnlSubscriptionDate.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).EndInit();
             this.pnlSubscriptionType.ResumeLayout(false);
             this.pnlSubscriptionType.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -1443,9 +1452,6 @@
             this.pnlFees.ResumeLayout(false);
             this.pnlFees.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            this.pnlSubscriptionDate.ResumeLayout(false);
-            this.pnlSubscriptionDate.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

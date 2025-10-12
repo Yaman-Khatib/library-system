@@ -150,7 +150,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label13);
-            this.groupBox1.Location = new System.Drawing.Point(94, 227);
+            this.groupBox1.Location = new System.Drawing.Point(94, 217);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(740, 229);
             this.groupBox1.TabIndex = 147;
@@ -289,7 +289,7 @@
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(94, 471);
+            this.groupBox2.Location = new System.Drawing.Point(94, 449);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(740, 263);
             this.groupBox2.TabIndex = 151;
@@ -485,7 +485,7 @@
             this.btnSave.Font = new System.Drawing.Font("Poppins", 8.3F);
             this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
             this.btnSave.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSave.Location = new System.Drawing.Point(777, 754);
+            this.btnSave.Location = new System.Drawing.Point(702, 731);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSave.Name = "btnSave";
             this.btnSave.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
@@ -503,7 +503,7 @@
             this.btnClose.Font = new System.Drawing.Font("Poppins", 8.3F);
             this.btnClose.Image = global::The_Story_Corner_Project.Properties.Resources.Close_32;
             this.btnClose.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnClose.Location = new System.Drawing.Point(614, 754);
+            this.btnClose.Location = new System.Drawing.Point(539, 735);
             this.btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnClose.Name = "btnClose";
             this.btnClose.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
@@ -530,7 +530,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(928, 796);
+            this.ClientSize = new System.Drawing.Size(928, 953);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.groupBox2);
@@ -539,8 +539,8 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.MaximumSize = new System.Drawing.Size(946, 843);
-            this.MinimumSize = new System.Drawing.Size(946, 843);
+            this.MaximumSize = new System.Drawing.Size(946, 1000);
+            this.MinimumSize = new System.Drawing.Size(946, 100);
             this.Name = "frmManageLibrarySettings";
             this.Palette = this.kryptonPalette1;
             this.PaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.Custom;

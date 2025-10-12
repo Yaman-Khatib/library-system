@@ -190,7 +190,7 @@ namespace The_Story_Corner_Project.Borrows
             if (dgvBorrows.Columns.Contains("SerialNumber"))
             {
                 dgvBorrows.Columns["SerialNumber"].HeaderText = "Serial Number";
-                dgvBorrows.Columns["SerialNumber"].Width = 150;
+                dgvBorrows.Columns["SerialNumber"].Width = 120;
             }
 
             if (dgvBorrows.Columns.Contains("LanguageName"))
@@ -218,7 +218,7 @@ namespace The_Story_Corner_Project.Borrows
 
             if (dgvBorrows.Columns.Contains("Status"))
             {
-                dgvBorrows.Columns["Status"].Width = 140;
+                dgvBorrows.Columns["Status"].Width = 160;
             }
 
             if (dgvBorrows.Columns.Contains("DidExtended"))

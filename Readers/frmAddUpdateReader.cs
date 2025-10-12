@@ -62,9 +62,9 @@ namespace The_Story_Corner_Project.Readers
             txtFatherName.Text = _Reader.PersonInfo.SecondName;
             txtLastName.Text = _Reader.PersonInfo.LastName;
             txtMotherName.Text = _Reader.PersonInfo.MotherName;
-
             txtAccountNumber.Text = _Reader.AccountNumber;
             lblReaderID.Text = _Reader.ReaderID?.ToString();
+            lblFees.Text = GetFees().ToString();
 
             if (_Reader.PersonInfo.Gender == false)
             {
@@ -194,7 +194,7 @@ namespace The_Story_Corner_Project.Readers
         private double GetFees()
         {
             double SubscriptionFees = (double)clsSubscriptionType.Find( cbSubscriptionType.SelectedIndex + 1).SubscriptionTypeFees.Value;
-            return SubscriptionFees * (1 - (double)numericDiscount.Value/100);
+            return SubscriptionFees - GetDiscount();
         }
         private void frmAddUpdateReader_Load(object sender, EventArgs e)
         {
@@ -456,8 +456,7 @@ namespace The_Story_Corner_Project.Readers
                 subscription.StartDate = dtpSubscriptionDate.Value;
                 subscription.ExpirationDate = dtpSubscriptionDate.Value.AddMonths(subscriptionType.SubscriptionTypeMonths.Value);
                 subscription.SubscriptionReason = clsSubscription.enSubscriptionReason.FirstTime;
-                subscription.Discount = (int)numericDiscount.Value;
-                
+                subscription.Discount = (int)numericDiscount.Value;                
 
                 subscription.Save();
             }
@@ -550,6 +549,7 @@ namespace The_Story_Corner_Project.Readers
 
             SavePersonInfo();
 
+
             if (_Mode == enMode.AddNew)
             {
                 _Reader.AccountNumber = txtAccountNumber.Text;
@@ -559,6 +559,7 @@ namespace The_Story_Corner_Project.Readers
                 {
                     if (!(cbSubscriptionType.SelectedIndex == 3)) //For limited subscription there is no need to add add a subscription
                     {
+                        
                         SaveSubscriptionInfo();
                     }
                     lblReaderID.Text = _Reader.ReaderID.ToString();
@@ -579,19 +580,6 @@ namespace The_Story_Corner_Project.Readers
 
 
 
-        }
-
-        private bool AreAllFieldsValid()
-        {
-            this.ValidateChildren();
-            foreach (Control control in this.Controls)
-            {
-                if (!string.IsNullOrEmpty(errorProvider1.GetError(control)))
-                {
-                    return false; // At least one control has an error
-                }
-            }
-            return true; // All fields are valid
         }
 
         private void txtEmail_Validating(object sender, CancelEventArgs e)
@@ -811,6 +799,11 @@ namespace The_Story_Corner_Project.Readers
             lblFees.Text = GetFees().ToString("N0") + " S.P";
         }
 
+        private double GetDiscount()
+        {            
+            return (double) numericDiscount.Value;
+        }
+
         private void numericDiscount_ValueChanged(object sender, EventArgs e)
         {
             if (cbSubscriptionType.SelectedIndex >= 0 && _Mode == enMode.AddNew)
@@ -842,6 +835,10 @@ namespace The_Story_Corner_Project.Readers
             }
         }
 
+        private void pnlSubscriptionType_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
