@@ -7,3 +7,12 @@ C:\learning_coding\The Story Corner Project\Library_Business\obj\Release\Library
 C:\learning_coding\The Story Corner Project\Library_Business\obj\Release\Library_Business.dll
 C:\learning_coding\The Story Corner Project\Library_Business\obj\Release\Library_Business.pdb
 C:\learning_coding\The Story Corner Project\Library_Business\obj\Release\Library_.5DD80C47.Up2Date
+C:\learning_coding\projects\The Story Corner Project\Library_Business\bin\Release\Library_Business.dll
+C:\learning_coding\projects\The Story Corner Project\Library_Business\bin\Release\Library_Business.pdb
+C:\learning_coding\projects\The Story Corner Project\Library_Business\bin\Release\Library_DataAccess.dll
+C:\learning_coding\projects\The Story Corner Project\Library_Business\bin\Release\Library_DataAccess.pdb
+C:\learning_coding\projects\The Story Corner Project\Library_Business\obj\Release\Library_Business.csproj.AssemblyReference.cache
+C:\learning_coding\projects\The Story Corner Project\Library_Business\obj\Release\Library_Business.csproj.CoreCompileInputs.cache
+C:\learning_coding\projects\The Story Corner Project\Library_Business\obj\Release\Library_.5DD80C47.Up2Date
+C:\learning_coding\projects\The Story Corner Project\Library_Business\obj\Release\Library_Business.dll
+C:\learning_coding\projects\The Story Corner Project\Library_Business\obj\Release\Library_Business.pdb

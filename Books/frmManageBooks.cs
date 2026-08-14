@@ -22,9 +22,14 @@ namespace The_Story_Corner_Project
         private int _totalRecords = 0;
         private string _currentLanguage = "";
 
+        private System.Windows.Forms.Timer _searchTimer;
+
         public frmManageBooks()
         {
             InitializeComponent();
+            _searchTimer = new System.Windows.Forms.Timer();
+            _searchTimer.Interval = 500; // 500ms delay
+            _searchTimer.Tick += _searchTimer_Tick;
         }
         private void _FillLanguagesComboBox()
         {
@@ -95,8 +100,10 @@ namespace The_Story_Corner_Project
         {
             try
             {
+                this.Cursor = Cursors.WaitCursor;
                 // Disable the DataGridView while loading data
                 dgvBooks.Enabled = false;
+                dgvBooks.DataSource = null;
 
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
@@ -121,13 +128,24 @@ namespace The_Story_Corner_Project
             }
             catch (Exception ex)
             {
-                // Handle any errors that occur during the data fetch
-                MessageBox.Show("Error loading data: " + ex.Message);
+                // Check for SQL connection errors
+                if (ex is System.Data.SqlClient.SqlException || (ex.InnerException != null && ex.InnerException is System.Data.SqlClient.SqlException))
+                {
+                    if (MessageBox.Show("Connection to the database was lost. Would you like to retry?", "Connection Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) == DialogResult.Retry)
+                    {
+                        await LoadCurrentPageAsync();
+                        return;
+                    }
+                }
+
+                // Handle any other errors that occur during the data fetch
+                MessageBox.Show("Error loading data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 // Re-enable the DataGridView
                 dgvBooks.Enabled = true;
+                this.Cursor = Cursors.Default;
             }
             
             UpdatePaginationInfo();
@@ -211,9 +229,21 @@ namespace The_Story_Corner_Project
             }
         }
 
-        private async void txtFilterValue_TextChanged(object sender, EventArgs e)
+        private void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
-            // Reset to first page when filter changes
+            // Stop the timer if it's running (user is still typing)
+            _searchTimer.Stop();
+
+            // Restart the timer
+            _searchTimer.Start();
+        }
+
+        private async void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            // Stop the timer so it doesn't fire again
+            _searchTimer.Stop();
+
+            // Reset to first page
             _currentPage = 1;
             await LoadCurrentPageAsync();
         }

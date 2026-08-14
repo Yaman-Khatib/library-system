@@ -199,7 +199,7 @@
             this.manageReadersToolStripMenuItem.Image = global::The_Story_Corner_Project.Properties.Resources.Man_32;
             this.manageReadersToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.manageReadersToolStripMenuItem.Name = "manageReadersToolStripMenuItem";
-            this.manageReadersToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.manageReadersToolStripMenuItem.Size = new System.Drawing.Size(263, 38);
             this.manageReadersToolStripMenuItem.Text = "Manage readers";
             this.manageReadersToolStripMenuItem.Click += new System.EventHandler(this.manageReadersToolStripMenuItem_Click);
             // 
@@ -208,7 +208,7 @@
             this.subscriptionsToolStripMenuItem.Image = global::The_Story_Corner_Project.Properties.Resources._4168571_renew_refresh_reload_repeat_sync_icon__1_;
             this.subscriptionsToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.subscriptionsToolStripMenuItem.Name = "subscriptionsToolStripMenuItem";
-            this.subscriptionsToolStripMenuItem.Size = new System.Drawing.Size(236, 38);
+            this.subscriptionsToolStripMenuItem.Size = new System.Drawing.Size(263, 38);
             this.subscriptionsToolStripMenuItem.Text = "Subscriptions";
             this.subscriptionsToolStripMenuItem.Click += new System.EventHandler(this.subscriptionsToolStripMenuItem_Click);
             // 
@@ -335,6 +335,7 @@
             this.toolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.RestoreData,
             this.BackUpData});
+            this.toolStripMenuItem3.Enabled = false;
             this.toolStripMenuItem3.Font = new System.Drawing.Font("Poppins", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.toolStripMenuItem3.Image = global::The_Story_Corner_Project.Properties.Resources._473633_backup_data_disk_diskette_floppy_icon1;
             this.toolStripMenuItem3.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;

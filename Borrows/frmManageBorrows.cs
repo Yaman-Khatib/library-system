@@ -26,9 +26,14 @@ namespace The_Story_Corner_Project.Borrows
         private clsBorrow.enBorrowStatus _currentStatus;
         private DateTime _currentStartDate;
         private DateTime _currentEndDate;
+        private System.Windows.Forms.Timer _searchTimer;
+
         public frmManageBorrows()
         {
             InitializeComponent();
+            _searchTimer = new System.Windows.Forms.Timer();
+            _searchTimer.Interval = 500;
+            _searchTimer.Tick += _searchTimer_Tick;
         }
         void _ResetDefaultValues()
         {
@@ -124,6 +129,7 @@ namespace The_Story_Corner_Project.Borrows
             {
                 // Disable the DataGridView while loading data
                 dgvBorrows.Enabled = false;
+                dgvBorrows.DataSource = null;
 
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
@@ -273,8 +279,19 @@ namespace The_Story_Corner_Project.Borrows
         
 
         
-        private async void txtFilterValue_TextChanged_1(object sender, EventArgs e)
+        private void txtFilterValue_TextChanged_1(object sender, EventArgs e)
         {
+            // Stop the timer if it's running (user is still typing)
+            _searchTimer.Stop();
+
+            // Restart the timer
+            _searchTimer.Start();
+        }
+
+        private async void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+
             // Reset to first page when filter changes
             _currentPage = 1;
             await LoadCurrentPageAsync();

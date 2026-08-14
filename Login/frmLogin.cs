@@ -126,33 +126,50 @@ namespace The_Story_Corner_Project.Login
             }
 
 
-            clsGlobal.CurrentUser = clsUser.GetUserInfoByUserNameAndPassword(txtUserName.Text, txtPassword.Text);
-            if (clsGlobal.CurrentUser != null)
-            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+                    clsGlobal.CurrentUser = clsUser.GetUserInfoByUserNameAndPassword(txtUserName.Text, txtPassword.Text);
+                    if (clsGlobal.CurrentUser != null)
+                    {
 
-            // IsDeleted check removed - not present in database
+                        // IsDeleted check removed - not present in database
 
-            if(cbRememberMe.Checked)
-            {
-                clsGlobal.RememberUserNameAndPassword(txtUserName.Text, txtPassword.Text);
-            }
-            else
-            {
-                clsGlobal.RememberUserNameAndPassword("", "");
-            }
+                        if (cbRememberMe.Checked)
+                        {
+                            clsGlobal.RememberUserNameAndPassword(txtUserName.Text, txtPassword.Text);
+                        }
+                        else
+                        {
+                            clsGlobal.RememberUserNameAndPassword("", "");
+                        }
 
-                frmMainMenu frm = new frmMainMenu();
-                this.Visible = false;
-                frm.ShowDialog();
-                _reset();
-                this.Visible = true;
-            }
-            else
-            {
-                txtUserName.Focus();
-                MessageBox.Show("Invalid Username/Password.", "Wrong credentials", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                clsGlobal.RememberUserNameAndPassword("", "");
-            }
+                        frmMainMenu frm = new frmMainMenu();
+                        this.Visible = false;
+                        frm.ShowDialog();
+                        _reset();
+                        this.Visible = true;
+                    }
+                    else
+                    {
+                        txtUserName.Focus();
+                        MessageBox.Show("Invalid Username/Password.", "Wrong credentials", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        clsGlobal.RememberUserNameAndPassword("", "");
+                    }
+                }
+                catch (System.Data.SqlClient.SqlException)
+                {
+                    MessageBox.Show("Connection to the database failed.\nPlease check your internet connection and try again.", 
+                        "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (Exception ex)
+                {
+                     MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
         }
     }
 }

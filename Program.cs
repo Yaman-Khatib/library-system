@@ -31,7 +31,7 @@ namespace The_Story_Corner_Project
             {
                 MasterConnection.Open();
 
-                DoesDBExists = clsGlobal.DatabaseExists(MasterConnection, "LibrarySystemDB");
+                DoesDBExists = clsGlobal.DatabaseExists(MasterConnection, "db38478");
             }
             //Application.Run(new CheckerForm());
             if(DoesDBExists)

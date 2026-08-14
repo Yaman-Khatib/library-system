@@ -26,9 +26,14 @@ namespace The_Story_Corner_Project.Readers
         private string _currentFilterColumn = "";
         private string _currentFilterValue = "";
         
+        private System.Windows.Forms.Timer _searchTimer;
+
         public frmManageReaders()
         {
             InitializeComponent();
+            _searchTimer = new System.Windows.Forms.Timer();
+            _searchTimer.Interval = 500;
+            _searchTimer.Tick += _searchTimer_Tick;
         }
         void _ResetFilters()
         {
@@ -70,6 +75,7 @@ namespace The_Story_Corner_Project.Readers
             {
                 // Disable the DataGridView while loading data
                 dgvReaders.Enabled = false;
+                dgvReaders.DataSource = null;
 
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
@@ -226,6 +232,17 @@ namespace The_Story_Corner_Project.Readers
         }
         private void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
+            // Stop the timer if it's running (user is still typing)
+            _searchTimer.Stop();
+
+            // Restart the timer
+            _searchTimer.Start();
+        }
+
+        private async void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+
             String FilterColumn = "";
             switch (cbFilterBy.Text)
             {
@@ -252,7 +269,7 @@ namespace The_Story_Corner_Project.Readers
             
             // Reset to first page and reload data
             _currentPage = 1;
-            LoadCurrentPageAsync();
+            await LoadCurrentPageAsync();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)

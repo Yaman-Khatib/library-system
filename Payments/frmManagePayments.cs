@@ -21,9 +21,14 @@ namespace The_Story_Corner_Project.Payments
         private int _currentPaymentTypeID;
         private DateTime _currentStartDate;
         private DateTime _currentEndDate;
+        private System.Windows.Forms.Timer _searchTimer;
+
         public frmManagePayments()
         {
             InitializeComponent();
+            _searchTimer = new System.Windows.Forms.Timer();
+            _searchTimer.Interval = 500;
+            _searchTimer.Tick += _searchTimer_Tick;
         }
 
         private void frmManagePayments_Load(object sender, EventArgs e)
@@ -80,6 +85,7 @@ namespace The_Story_Corner_Project.Payments
             {
                 // Disable the DataGridView while loading data
                 dgvPayments.Enabled = false;
+                dgvPayments.DataSource = null;
 
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
@@ -162,8 +168,19 @@ namespace The_Story_Corner_Project.Payments
         }
 
 
-        private async void txtFilterValue_TextChanged(object sender, EventArgs e)
+        private void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
+            // Stop the timer if it's running (user is still typing)
+            _searchTimer.Stop();
+
+            // Restart the timer
+            _searchTimer.Start();
+        }
+
+        private async void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+
             // For now, we'll implement a simple approach where filtering resets to page 1
             // In a more advanced implementation, you could add filter parameters to the SQL query
             _currentPage = 1;

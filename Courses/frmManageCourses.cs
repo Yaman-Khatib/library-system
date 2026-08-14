@@ -19,9 +19,14 @@ namespace The_Story_Corner_Project.Courses
     public partial class frmManageCourses : KryptonForm
     {
         DataTable _dtCourses;
+        private System.Windows.Forms.Timer _searchTimer;
+
         public frmManageCourses()
         {
             InitializeComponent();
+            _searchTimer = new System.Windows.Forms.Timer();
+            _searchTimer.Interval = 500;
+            _searchTimer.Tick += _searchTimer_Tick;
         }
 
         private void frmManageCourses_Load(object sender, EventArgs e)
@@ -63,6 +68,7 @@ namespace The_Story_Corner_Project.Courses
             {
                 // Disable the DataGridView while loading data
                 dgvCourses.Enabled = false;
+                dgvCourses.DataSource = null;
 
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
@@ -232,6 +238,17 @@ namespace The_Story_Corner_Project.Courses
 
         private void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
+            // Stop the timer if it's running (user is still typing)
+            _searchTimer.Stop();
+
+            // Restart the timer
+            _searchTimer.Start();
+        }
+
+        private void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+
             String FilterColumn = "";
             switch (cbFilterBy.Text)
             {

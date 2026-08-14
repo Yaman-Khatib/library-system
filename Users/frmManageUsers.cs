@@ -16,9 +16,14 @@ namespace The_Story_Corner_Project.Users
     public partial class frmManageUsers : KryptonForm
     {
         DataTable _dtUsers;
+        private System.Windows.Forms.Timer _searchTimer;
+
         public frmManageUsers()
         {
             InitializeComponent();
+            _searchTimer = new System.Windows.Forms.Timer();
+            _searchTimer.Interval = 500;
+            _searchTimer.Tick += _searchTimer_Tick;
         }
         void _ResetFilters()
         {
@@ -48,6 +53,7 @@ namespace The_Story_Corner_Project.Users
             {
                 // Disable the DataGridView while loading data
                 dgvUsers.Enabled = false;
+                dgvUsers.DataSource = null;
 
                 // Show a loading message or spinner
                 pctrLoading.Visible = true;
@@ -133,6 +139,17 @@ namespace The_Story_Corner_Project.Users
 
         private void txtFilterValue_TextChanged(object sender, EventArgs e)
         {
+            // Stop the timer if it's running (user is still typing)
+            _searchTimer.Stop();
+
+            // Restart the timer
+            _searchTimer.Start();
+        }
+
+        private void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+
             String FilterColumn = "";
             switch (cbFilterBy.Text)
             {
@@ -180,8 +197,6 @@ namespace The_Story_Corner_Project.Users
             }
             else
             { pctrLoading.Visible = true; }
-
-
         }
 
         private void txtFilterValue_KeyPress(object sender, KeyPressEventArgs e)
